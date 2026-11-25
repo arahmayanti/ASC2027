@@ -254,6 +254,7 @@ details.sec .in{padding:18px 20px;display:grid;gap:14px}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 </style>
 <script>new MutationObserver(()=>{for(const c of document.querySelectorAll('.stack td:not([data-l])')){let i=0,p=c;while(p=p.previousElementSibling)i+=p.colSpan;c.dataset.l=c.closest('table').rows[0].cells[i]?.textContent||''}}).observe(document,{childList:true,subtree:true})</script>
+<script src="firebase-config.js"></script>
 </head>
 <body>
 <div id="app"><div class="screen"><div class="empty"><p>Loading the voyage…</p></div></div></div>
@@ -318,14 +319,57 @@ const Store={db:null,
   watch(p,cb,err){if(this.db)return this.db.doc(p).onSnapshot(s=>cb(s.exists?s.data():null,s.metadata),e=>{console.warn(p,e);err&&err(e)});const s={doc:true,path:p,run:()=>cb(lread(p),{fromCache:false})};lsubs.add(s);setTimeout(s.run,0);return()=>lsubs.delete(s)},
   watchAll(c,cb,err){if(this.db)return this.db.collection(c).onSnapshot(q=>cb(q.docs.map(d=>({...d.data(),_id:d.id})),q.metadata),e=>{console.warn(c,e);err&&err(e)});const s={doc:false,path:c,run:()=>cb(lcoll(c),{fromCache:false})};lsubs.add(s);setTimeout(s.run,0);return()=>lsubs.delete(s)},
   async claim(p,data){
-    if(this.db){const ref=this.db.doc(p);let r={acquired:true};try{r=await ref.acquire({holder:data.groupId,ttlMs:5000})}catch(e){}
+    if(this.db){const ref=this.db.doc(p);if(ref.claim)return ref.claim(data);let r={acquired:true};try{r=await ref.acquire({holder:data.groupId,ttlMs:5000})}catch(e){}
       if(!r.acquired)return false;const s=await ref.get();if(s.exists&&s.data()?.groupId)return false;await ref.set(data);return true}
     if(lread(p))return false;LS.set(PFX+p,data);lfire(p);return true}
 };
 async function retry(fn){try{return await fn()}catch(e){if(e&&e.code==='unavailable'){await sleep(400+Math.random()*800);return fn()}throw e}}
 
+/* ================= Firebase backend (self-hosting on Vercel or any static host) =================
+   Used when firebase-config.js provides a config. Same API shape as the claude.ai database, so the
+   rest of the app does not change. Real security is in firestore.rules. */
+const FB_VER='10.12.2';
+const FB={F:null,U:null,fs:null,auth:null,user:null};
+function fbErr(e){const c=(e&&e.code)||'',m=String((e&&e.message)||c);let code=c;
+  if(c==='permission-denied'||c==='unauthenticated')code='invalid_argument';
+  else if(c==='resource-exhausted'||(c==='invalid-argument'&&/size|too large|exceeds/i.test(m)))code='quota_exceeded';
+  else if(c==='invalid-argument')code='bad_data';
+  const err=new Error(m);err.code=code;err.fbCode=c;return err}
+const fbSnap=s=>({exists:s.exists(),id:s.id,data:()=>s.data(),metadata:s.metadata});
+function fbDb(){const F=FB.F,fs=FB.fs;const w=pr=>pr.catch(e=>{throw fbErr(e)});
+  return{
+    doc(p){const r=F.doc(fs,p);return{
+      get:()=>w(F.getDoc(r)).then(fbSnap),
+      set:d=>w(F.setDoc(r,d)),
+      update:d=>w(F.updateDoc(r,d)),
+      delete:()=>w(F.deleteDoc(r)),
+      onSnapshot:(cb,err)=>F.onSnapshot(r,s=>cb(fbSnap(s)),e=>err&&err(fbErr(e))),
+      claim:d=>w(F.runTransaction(fs,async t=>{const s=await t.get(r);if(s.exists()&&s.data()?.groupId)return false;t.set(r,d);return true}))}},
+    collection(c){const q=F.collection(fs,c);return{
+      get:()=>w(F.getDocs(q)).then(s=>({docs:s.docs.map(fbSnap)})),
+      onSnapshot:(cb,err)=>F.onSnapshot(q,s=>cb({docs:s.docs.map(fbSnap),metadata:s.metadata}),e=>err&&err(fbErr(e)))}}
+  }}
+async function fbConnect(cfg){
+  const base='https://www.gstatic.com/firebasejs/'+FB_VER+'/';
+  const[A,F,U]=await Promise.all([import(base+'firebase-app.js'),import(base+'firebase-firestore.js'),import(base+'firebase-auth.js')]);
+  const app=A.initializeApp(cfg);let fs;
+  try{fs=F.initializeFirestore(app,{ignoreUndefinedProperties:true,localCache:F.persistentLocalCache({tabManager:F.persistentMultipleTabManager()})})}
+  catch(e){fs=F.initializeFirestore(app,{ignoreUndefinedProperties:true})}
+  const auth=U.getAuth(app);Object.assign(FB,{F,U,fs,auth});
+  await new Promise(r=>{let done=false;const fin=()=>{if(!done){done=true;r()}};U.onAuthStateChanged(auth,u=>{FB.user=u;fin()});setTimeout(fin,5000)});
+  return fbDb()}
+/* admin = a signed-in account that firestore.rules allows to read cfg/keys */
+async function fbIsAdmin(){if(!FB.user)return false;
+  try{await Promise.race([FB.F.getDocFromServer(FB.F.doc(FB.fs,'cfg/keys')),sleep(8000).then(()=>{throw new Error('timeout')})]);return true}catch(e){return false}}
+async function fbLogin(email,pw){
+  if(!email||!pw)return'bad';
+  try{await FB.U.signInWithEmailAndPassword(FB.auth,email,pw);FB.user=FB.auth.currentUser}
+  catch(e){const c=(e&&e.code)||'';return/too-many/.test(c)?'wait':/network/.test(c)?'offline':'bad'}
+  if(await fbIsAdmin()){S.admin=true;return'ok'}
+  try{await FB.U.signOut(FB.auth)}catch(e){}FB.user=null;return'notadmin'}
+
 /* ================= global state ================= */
-const S={mode:'connecting',admin:false,canWrite:null,event:null,live:null,content:null,keys:null,eventOk:false,contentOk:false,liveOk:false,online:navigator.onLine,lastUpdate:0,groupsRaw:[],ctrl:{},groupsOk:false,slow:false};
+const S={mode:'connecting',backend:'none',admin:false,canWrite:null,event:null,live:null,content:null,keys:null,eventOk:false,contentOk:false,liveOk:false,online:navigator.onLine,lastUpdate:0,groupsRaw:[],ctrl:{},groupsOk:false,slow:false};
 const DEF_EVENT={eventName:'Sail with Purpose · Site Mission 2027',eventId:'SM2027',startTime:'',endTime:'',maxGroups:80,finalAnimationEnabled:true,
   logic:{questionsPerMission:3,maxAttempts:0,hintThreshold:2,categoryLocking:true,shuffleAnswers:true,shuffleOnRetry:true,timeoutMin:5,timerVisible:true,durationMin:60,exceptionsCount:true},
   dashboard:{view:'groups',refreshSec:5,intensity:'normal',labelMode:'name',showPercent:true,rotateSec:0}};
@@ -372,26 +416,27 @@ function aggregate(){
    Only a PBKDF2 hash of the password is in this page. The database rules are the real lock:
    saving config, content and facilitator changes also requires Editor access to the page. */
 const AUTH={salt:'swp-adm-7f3k2q',hash:'28612b3079cc372ceef9f78c68b929981944f5caf23b1ab7fdec719fa6927f38',mem:false,fails:0,until:0,
-  ok(){if(this.mem)return true;try{const a=JSON.parse(sessionStorage.getItem('smg:admin')||'null');return !!a&&a.h===this.hash.slice(0,16)&&a.exp>now()}catch(e){return false}}};
+  ok(){if(S.backend==='firebase')return !!S.admin;if(this.mem)return true;try{const a=JSON.parse(sessionStorage.getItem('smg:admin')||'null');return !!a&&a.h===this.hash.slice(0,16)&&a.exp>now()}catch(e){return false}}};
 async function pbkdf(pw){const enc=new TextEncoder();const k=await crypto.subtle.importKey('raw',enc.encode(pw),'PBKDF2',false,['deriveBits']);const b=await crypto.subtle.deriveBits({name:'PBKDF2',salt:enc.encode(AUTH.salt),iterations:150000,hash:'SHA-256'},k,256);return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
 async function tryLogin(pw){
   if(now()<AUTH.until)return'wait';let h;try{h=await pbkdf(pw)}catch(e){return'unsupported'}
   if(h===AUTH.hash){AUTH.fails=0;AUTH.mem=true;try{sessionStorage.setItem('smg:admin',JSON.stringify({h:AUTH.hash.slice(0,16),exp:now()+12*3600e3}))}catch(e){}return'ok'}
   if(++AUTH.fails>=5){AUTH.fails=0;AUTH.until=now()+30000}return'bad'}
-function logout(){AUTH.mem=false;try{sessionStorage.removeItem('smg:admin')}catch(e){}closeModal();toast('Logged out of admin.');goHome()}
+function logout(){if(S.backend==='firebase'){S.admin=false;FB.U&&FB.U.signOut(FB.auth).catch(()=>{});FB.user=null}AUTH.mem=false;try{sessionStorage.removeItem('smg:admin')}catch(e){}closeModal();toast('Logged out of admin.');goHome()}
 function goHome(){P.screen='welcome';P.ui.fb=null;P.err='';if(view()!=='play')location.hash='play';else renderPlay()}
 const ADMIN_PAGES=[['home','Home','home'],['facilitator','Facilitator','users'],['developer','Content editor','edit'],['dashboard','Live dashboard','chart']];
 function adminMenu(){modal({title:'Admin menu',body:`<div style="display:grid;gap:10px">${ADMIN_PAGES.map(([h,l,i])=>h==='home'?`<button class="btn" data-go-home>${icon(i,18)}${l} (first page)</button>`:`<a class="btn ${h===view()?'primary':''}" href="#${h}">${icon(i,18)}${l}</a>`).join('')}</div>`,actions:[{label:'Log out',cls:'warn',fn:()=>logout()},{label:'Close',cls:'ghost'}]});const b=$('#modal [data-go-home]');if(b)b.onclick=()=>{closeModal();goHome()}}
 function renderLogin(next){
   $('#app').innerHTML=`<header class="bar"><button class="brand" data-act="home" style="background:none;border:0;cursor:pointer;min-height:44px">${icon('ship',24)}<span>Sail with Purpose</span></button><div class="grow"></div><button class="btn small ghost" data-act="home">${icon('home',18)}Home</button></header>
-  <main class="screen"><form id="loginform" class="card narrow stack wrap" style="padding:clamp(24px,3vw,40px)" novalidate><span style="color:var(--cyan)">${icon('lock',40)}</span><h1>Admin login</h1><p class="muted">For facilitators and the content team. Enter the admin password to manage missions, questions, the live dashboard and the event.</p>
+  <main class="screen"><form id="loginform" class="card narrow stack wrap" style="padding:clamp(24px,3vw,40px)" novalidate><span style="color:var(--cyan)">${icon('lock',40)}</span><h1>Admin login</h1><p class="muted">For facilitators and the content team. Enter the admin ${S.backend==='firebase'?'email and password':'password'} to manage missions, questions, the live dashboard and the event.</p>
+  ${S.backend==='firebase'?`<div class="field"><label for="em">Admin email</label><input class="input" id="em" type="email" autocomplete="username" inputmode="email"></div>`:''}
   <div class="field"><label for="pw">Password</label><input class="input" id="pw" type="password" autocomplete="current-password" aria-describedby="pwerr"><div id="pwerr" aria-live="polite"></div></div>
   <label class="sw"><input type="checkbox" id="pwshow"> Show password</label>
   <div class="row"><button class="btn primary" type="submit">Log in</button><button class="btn ghost" type="button" data-act="home">Back to the game</button></div></form></main>`;
-  const f=$('#loginform'),pw=$('#pw');pw.focus();
+  const f=$('#loginform'),pw=$('#pw'),em=$('#em');(em||pw).focus();
   $('#pwshow').onchange=e=>{pw.type=e.target.checked?'text':'password'};
-  f.onsubmit=async e=>{e.preventDefault();const btn=$('button[type=submit]',f);btn.disabled=true;const r=await tryLogin(pw.value);btn.disabled=false;
-    const msg={bad:'That password is not correct.',wait:'Too many attempts. Please wait 30 seconds and try again.',unsupported:'This browser cannot check the password. Please use an up-to-date browser.'}[r];
+  f.onsubmit=async e=>{e.preventDefault();const btn=$('button[type=submit]',f);btn.disabled=true;const r=S.backend==='firebase'?await fbLogin((em?.value||'').trim(),pw.value):await tryLogin(pw.value);btn.disabled=false;
+    const msg={bad:S.backend==='firebase'?'That email or password is not correct.':'That password is not correct.',notadmin:'This account is not on the admin list in the database rules.',offline:'No connection. Please check the internet and try again.',wait:'Too many attempts. Please wait 30 seconds and try again.',unsupported:'This browser cannot check the password. Please use an up-to-date browser.'}[r];
     if(r==='ok'){toast('Welcome. You are logged in as admin.');render();return}
     $('#pwerr').innerHTML=`<p class="err">${icon('alert',16)}${esc(msg)}</p>`;pw.select()};
 }
@@ -404,6 +449,7 @@ function cleanup(){teardown.forEach(f=>{try{f()}catch(e){}});teardown=[]}
 function render(){
   const v=view();
   document.body.dataset.view=v;
+  if(S.mode==='error'){$('#app').innerHTML=`<div class="screen"><div class="empty">${icon('alert',40)}<p>Cannot reach the event database. Please check the internet connection.</p><button class="btn primary" onclick="location.reload()">Try again</button></div></div>`;return}
   if(S.mode==='connecting'){$('#app').innerHTML=`<div class="screen"><div class="empty">${icon('compass',40)}<p>Connecting to the voyage…</p></div></div>`;return}
   if(v==='play')return renderPlay();
   if(v==='dashboard')return renderDash();
@@ -847,7 +893,7 @@ function drawNetwork(body,A){
    FACILITATOR
    ====================================================================== */
 const F={filter:'all',q:'',pending:false};
-function adminNav(cur){return`<header class="bar"><button class="brand" data-act="home" aria-label="Home" style="background:none;border:0;cursor:pointer;min-height:44px">${icon('ship',24)}<span>Sail with Purpose · Admin</span></button><nav class="adminnav" aria-label="Admin pages">${ADMIN_PAGES.map(([h,l,i])=>h==='home'?`<button class="link" style="text-decoration:none;color:var(--soft);font-weight:600;display:inline-flex;gap:6px;align-items:center" data-act="home">${icon(i,16)}${l}</button>`:`<a href="#${h}" ${cur===h?'aria-current="page"':''} style="gap:6px">${icon(i,16)}${l}</a>`).join('')}</nav><div class="grow"></div>${S.mode==='local'?`<span class="tag ph">Rehearsal mode · this browser only</span>`:`<span class="chip"><span class="dot"></span>Live database</span>`}<button class="btn small ghost" data-act="logout">${icon('logout',18)}Log out</button></header>${S.mode==='live'&&!S.admin?`<div class="console" style="padding-bottom:0"><p class="hint">${icon('alert',16)} You are logged in, but your claude.ai account is not an Editor of this page, so changes will not be saved. Ask the page owner to share it with you as <b>Editor</b>.</p></div>`:''}`}
+function adminNav(cur){return`<header class="bar"><button class="brand" data-act="home" aria-label="Home" style="background:none;border:0;cursor:pointer;min-height:44px">${icon('ship',24)}<span>Sail with Purpose · Admin</span></button><nav class="adminnav" aria-label="Admin pages">${ADMIN_PAGES.map(([h,l,i])=>h==='home'?`<button class="link" style="text-decoration:none;color:var(--soft);font-weight:600;display:inline-flex;gap:6px;align-items:center" data-act="home">${icon(i,16)}${l}</button>`:`<a href="#${h}" ${cur===h?'aria-current="page"':''} style="gap:6px">${icon(i,16)}${l}</a>`).join('')}</nav><div class="grow"></div>${S.mode==='local'?`<span class="tag ph">Rehearsal mode · this browser only</span>`:`<span class="chip"><span class="dot"></span>Live database</span>`}<button class="btn small ghost" data-act="logout">${icon('logout',18)}Log out</button></header>${S.mode==='live'&&!S.admin?`<div class="console" style="padding-bottom:0"><p class="hint">${icon('alert',16)} You are logged in, but this account cannot save changes to the event database.</p></div>`:''}`}
 function schedFac(){if(F.pending)return;F.pending=true;setTimeout(()=>{F.pending=false;if(view()==='facilitator'&&!$('#modal:not([hidden])'))drawFac()},600)}
 function renderFac(){watchGroups();watchKeys();$('#app').innerHTML=adminNav('facilitator')+`<main class="console" id="fac"></main>`;drawFac()}
 function drawFac(){
@@ -1119,12 +1165,21 @@ function onLive(d){
 }
 function refreshView(){const v=view();if(v==='play')rerender();else if(v==='dashboard')schedDash();else if(v==='facilitator')schedFac();else if(v==='developer'&&!DV.dirty&&!DV.setDirty&&!$('#dev:focus-within'))renderDev()}
 async function boot(){
+  const fcfg=window.FIREBASE_CONFIG;
+  if(fcfg&&fcfg.apiKey&&fcfg.projectId){
+    let fdb=null;try{fdb=await Promise.race([fbConnect(fcfg),sleep(20000).then(()=>null)])}catch(e){console.warn('Firebase',e)}
+    if(!fdb){S.mode='error';render();return}
+    Store.db=fdb;S.mode='live';S.backend='firebase';S.canWrite=true;S.admin=await fbIsAdmin();
+    return bootData()}
   let c=window.claude;
   for(let i=0;i<6&&!(c&&c.use);i++){await sleep(200);c=window.claude}
   let db=null,user=null;
   if(c&&c.use){const to=new Promise(r=>setTimeout(()=>r(null),10000));try{[db,user]=await Promise.all([Promise.race([c.use('db'),to]),Promise.race([c.use('user'),to])])}catch(e){}}
   if(db){Store.db=db;S.mode='live';try{S.admin=!!(await user?.canEdit?.())}catch(e){S.admin=false}try{S.canWrite=await user?.can?.('data.write')}catch(e){}}
   else{S.mode='local';S.admin=true}
+  S.backend=db?'claude':'local';
+  return bootData()}
+function bootData(){
   let first=0;const ready=()=>{if(++first===3){if(view()==='play'){resumeDevice().then(r=>{renderPlay()})}else render()}};
   Store.watch('cfg/event',d=>{S.event=d;S.eventOk=true;if(first<3)ready();else refreshView()});
   Store.watch('cfg/live',d=>{if(first<3){S.live=d;D.finalSeen=d?.finalTrigger||0;S.liveOk=true;ready()}else onLive(d)});

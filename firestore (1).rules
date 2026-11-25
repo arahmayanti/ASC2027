@@ -1,0 +1,50 @@
+rules_version = '2';
+
+// Sail with Purpose · Site Mission 2027
+// Paste this into Firebase console > Firestore Database > Rules, then click Publish.
+// Mirrors the original claude.ai rules:
+//   everything readable by players, written by admins only
+//   cfg/keys (answer keys) readable and writable by admins only
+//   groups and names writable by players (registration and progress)
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // 1) Replace with the email(s) of your admin accounts (lowercase).
+    //    Create the same accounts in Firebase console > Authentication > Users.
+    function isAdmin() {
+      return request.auth != null
+        && request.auth.token.email != null
+        && request.auth.token.email.lower() in [
+          'admin@example.com'
+        ];
+    }
+
+    // Event settings, live status and content. Answer keys are admin-only.
+    match /cfg/{docId} {
+      allow read: if docId != 'keys' || isAdmin();
+      allow write: if isAdmin();
+    }
+
+    // Facilitator controls per group (pause, remove, adjust).
+    match /ctrl/{groupId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Group progress. Players create and update their own group; only admins delete.
+    match /groups/{groupId} {
+      allow read: if true;
+      allow create, update: if request.resource.data.groupId == groupId || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Registered group names (keeps names unique).
+    match /names/{nameKey} {
+      allow read: if true;
+      allow create: if request.resource.data.keys().hasAll(['groupId', 'name']) || isAdmin();
+      allow delete: if true;
+      allow update: if isAdmin();
+    }
+  }
+}
