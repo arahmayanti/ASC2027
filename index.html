@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sail with Purpose</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* VOICE: premium corporate event; optimistic, calm, clear enough for six people around one screen
+   IDEA: the bridge console of a ship on a night voyage under the aurora
+   PICTURE: a sea chart with four destinations and a ship that gains sails and lights as missions activate
+   COLOUR and TYPE: deep navy night with aurora cyan, green, violet, magenta; Sora display + Inter text
+   LAYOUT: one action per screen, slim status bar, landscape first, stacks cleanly on phones */
+:root{--disp:Sora,Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color-scheme:dark;--bg:#050f24;--bg2:#081a3a;--panel:#0c1f45;--panel2:#11295a;--line:#22407a;--ink:#f3f7ff;--soft:#b3c2e0;--muted:#7083ab;--cyan:#33e6f2;--blue:#4a8dff;--green:#41f2a5;--violet:#9479ff;--magenta:#ff52b9;--amber:#ffbf47;--red:#ff7484;--r:18px}
+:root[data-theme=light],:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+html,body{min-height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow-x:clip;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0;z-index:-1;background:radial-gradient(55% 38% at 12% -4%,rgba(65,242,165,.16),transparent 70%),radial-gradient(48% 40% at 88% 0%,rgba(148,121,255,.22),transparent 70%),radial-gradient(70% 45% at 50% 112%,rgba(51,230,242,.13),transparent 70%),linear-gradient(#061433,#050f24 55%,#040d22)}
+h1,h2,h3{font-family:var(--disp);line-height:1.08;margin:0;text-wrap:balance;font-weight:700}
+h1{font-size:clamp(30px,4vw,48px)}h2{font-size:clamp(24px,2.6vw,34px)}h3{font-size:19px}
+p{margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:var(--cyan)}
+.ic{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+:focus-visible{outline:3px solid var(--cyan);outline-offset:3px}
+[tabindex="-1"]:focus{outline:none}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:52px;padding:0 26px;border-radius:999px;border:1px solid var(--line);background:var(--panel2);font-weight:600;font-size:17px;cursor:pointer;transition:transform .15s,background .2s,border-color .2s;text-decoration:none;white-space:nowrap}
+.btn:hover{border-color:var(--cyan)}.btn:active{transform:scale(.98)}
+.btn.primary{background:linear-gradient(95deg,var(--cyan),var(--green));color:#03122b;border:0;box-shadow:0 8px 30px -10px rgba(51,230,242,.7)}
+.btn.ghost{background:transparent}
+.btn.small{min-height:44px;padding:0 16px;font-size:15px}
+.btn.warn{border-color:#6b2b46;color:#ffd0dc}.btn.warn:hover{border-color:var(--red)}
+.btn[disabled]{opacity:.42;cursor:not-allowed;transform:none;box-shadow:none}
+.link{background:none;border:0;color:var(--cyan);text-decoration:underline;cursor:pointer;min-height:44px;padding:0 6px}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.muted{color:var(--soft)}.tiny{font-size:13px;color:var(--soft)}
+.tag{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid var(--line);color:var(--soft);white-space:nowrap}
+.tag.ph{border-color:#7a5a12;color:#ffd98a;background:rgba(255,191,71,.08)}
+.card{background:linear-gradient(180deg,rgba(17,41,90,.85),rgba(12,31,69,.85));border:1px solid var(--line);border-radius:var(--r);box-shadow:0 20px 60px -30px rgba(0,0,0,.8)}
+/* top bar */
+.bar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:14px;padding:10px max(3vw,14px);background:rgba(5,15,36,.82);backdrop-filter:blur(10px);border-bottom:1px solid rgba(34,64,122,.6);min-height:64px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--disp);font-weight:700;font-size:16px;white-space:nowrap}
+.brand .ic{color:var(--cyan)}
+.bar .grow{flex:1}
+.who{display:flex;flex-direction:column;line-height:1.2}.who b{font-size:15px}.who span{font-size:12px;color:var(--soft)}
+.chip{display:inline-flex;align-items:center;gap:7px;font-size:13px;color:var(--soft);white-space:nowrap}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green)}
+.dot.warn{background:var(--amber);box-shadow:0 0 10px var(--amber)}.dot.off{background:var(--muted);box-shadow:none}.dot.busy{background:var(--cyan);box-shadow:0 0 10px var(--cyan)}
+.meter{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--soft);white-space:nowrap}
+.meter i{display:block;width:90px;height:6px;border-radius:9px;background:rgba(255,255,255,.1);overflow:hidden}
+.meter i b{display:block;height:100%;background:linear-gradient(90deg,var(--cyan),var(--green));border-radius:9px;transition:width .6s}
+/* screens */
+.screen{min-height:calc(100vh - 64px);display:grid;place-items:center;padding:clamp(16px,3vw,40px) max(3vw,14px)}
+.wrap{width:100%;max-width:1180px}
+.narrow{max-width:760px}
+.stack>*+*{margin-top:18px}
+.lead{font-size:19px;color:var(--soft);max-width:60ch}
+/* welcome */
+.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:clamp(20px,4vw,56px);align-items:center}
+.hero h1{font-size:clamp(38px,5.6vw,72px);letter-spacing:-.01em;line-height:1}
+.hero h1 span{display:block;background:linear-gradient(90deg,var(--cyan),var(--green),var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent}
+.motto{font-family:var(--disp);font-weight:600;font-size:20px;color:var(--soft)}
+.scene{border-radius:24px;overflow:hidden;border:1px solid var(--line);aspect-ratio:16/10;background:#03102a}
+.scene svg{display:block;width:100%;height:100%}
+/* forms */
+.field{display:grid;gap:6px}.field label{font-weight:600;font-size:15px}
+.input{width:100%;min-height:52px;padding:12px 16px;border-radius:14px;border:1px solid var(--line);background:#071735;font-size:17px}
+.input:focus{border-color:var(--cyan);outline:none;box-shadow:0 0 0 3px rgba(51,230,242,.25)}
+textarea.input{min-height:90px;resize:vertical;line-height:1.45}
+.err{color:#ffc2cc;font-size:14px;display:flex;gap:6px;align-items:center}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.avatars{display:flex;gap:10px;flex-wrap:wrap}
+.av{width:56px;height:56px;border-radius:16px;border:2px solid var(--line);background:#071735;display:grid;place-items:center;cursor:pointer}
+.av[aria-checked=true]{border-color:currentColor;box-shadow:0 0 0 3px rgba(255,255,255,.08),0 0 18px -4px currentColor}
+.gid{font-family:var(--disp);font-size:30px;letter-spacing:.12em;color:var(--cyan)}
+/* steps */
+.steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.step{padding:20px;display:grid;gap:10px;align-content:start}
+.step .ic{color:var(--cyan)}
+.step b{font-family:var(--disp);font-size:17px}
+/* map */
+.map{position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr) minmax(0,1fr);grid-template-areas:"e ship p" "i ship c";gap:18px;padding:22px;border-radius:26px;border:1px solid var(--line);background:radial-gradient(circle at 50% 50%,rgba(51,230,242,.08),transparent 60%),repeating-linear-gradient(0deg,rgba(51,230,242,.05) 0 1px,transparent 1px 64px),repeating-linear-gradient(90deg,rgba(51,230,242,.05) 0 1px,transparent 1px 64px),#06163a}
+.map>svg.routes{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.dest{position:relative;text-align:left;display:grid;gap:8px;padding:20px;border-radius:20px;border:1.5px solid var(--line);background:rgba(8,26,58,.9);cursor:pointer;min-height:170px;align-content:start;transition:transform .2s,border-color .2s,box-shadow .2s}
+.dest:hover{transform:translateY(-2px)}
+.dest .code{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;font-family:var(--disp);font-weight:800;font-size:24px;color:#03122b}
+.dest h3{font-size:18px}
+.dest .st{display:flex;gap:7px;align-items:center;font-size:14px;font-weight:600}
+.dest.locked{opacity:.62;border-style:dashed;background:rgba(8,20,45,.85)}
+.dest.locked .code{background:#2a3a5e!important;color:#9fb0d0}
+.dest.current{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(51,230,242,.18),0 0 40px -10px var(--cyan)}
+.dest.done{border-color:var(--green)}
+.shipbox{grid-area:ship;display:grid;place-items:center;align-content:center;gap:10px;text-align:center;padding:10px}
+.shipbox svg{width:100%;max-width:330px;height:auto}
+.big{font-family:var(--disp);font-weight:700;font-size:clamp(26px,3vw,38px)}
+/* category + missions */
+.mgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.mcard{display:grid;gap:10px;align-content:start;padding:22px;text-align:left;border-radius:20px;border:1.5px solid var(--line);background:rgba(8,26,58,.92);cursor:pointer;min-height:200px;transition:transform .2s,border-color .2s}
+.mcard:hover{transform:translateY(-2px);border-color:var(--cyan)}
+.mcard .mi{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;background:rgba(255,255,255,.06)}
+.mcard.done{border-color:var(--green);background:linear-gradient(180deg,rgba(65,242,165,.10),rgba(8,26,58,.92))}
+.pdots{display:flex;gap:6px}.pdots i{width:22px;height:6px;border-radius:9px;background:rgba(255,255,255,.14)}.pdots i.on{background:var(--green)}
+.crumb{display:flex;align-items:center;gap:10px;flex-wrap:wrap;color:var(--soft);font-size:14px}
+/* brief */
+.brief{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:20px}
+.brief .card{padding:clamp(20px,2.4vw,30px)}
+.purpose{font-family:var(--disp);font-size:clamp(20px,2vw,26px);font-weight:600;line-height:1.25}
+.blist{margin:6px 0 0;padding:0;list-style:none;display:grid;gap:8px}
+.blist li{display:flex;gap:10px;align-items:flex-start}.blist li .ic{color:var(--green);margin-top:3px}
+.kicker{font-size:14px;font-weight:700;color:var(--cyan)}
+/* question */
+.qwrap{display:grid;gap:20px}
+.qhead{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;align-items:center}
+.qtext{font-family:var(--disp);font-weight:600;font-size:clamp(22px,2.4vw,32px);line-height:1.25}
+.opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.opt{display:flex;gap:16px;align-items:center;text-align:left;min-height:84px;padding:16px 20px;border-radius:18px;border:2px solid var(--line);background:rgba(8,26,58,.95);cursor:pointer;font-size:18px;font-weight:500;transition:border-color .15s,background .15s}
+.opt:hover{border-color:#3d64ad}
+.opt .k{flex:none;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-family:var(--disp);font-weight:700;background:rgba(255,255,255,.07)}
+.opt[aria-checked=true]{border-color:var(--cyan);background:rgba(51,230,242,.10)}
+.opt[aria-checked=true] .k{background:var(--cyan);color:#03122b}
+.fb{display:grid;gap:14px;padding:24px;border-radius:20px}
+.fb.right{background:linear-gradient(120deg,rgba(65,242,165,.16),rgba(51,230,242,.08));border:1.5px solid var(--green)}
+.fb.wrong{background:rgba(255,191,71,.07);border:1.5px solid #8a6a2a}
+.fb h3{display:flex;gap:10px;align-items:center;font-size:24px}
+.hint{padding:12px 16px;border-radius:14px;background:rgba(148,121,255,.12);border:1px solid #4b3d93}
+/* celebration */
+.celebrate{text-align:center;display:grid;gap:16px;justify-items:center}
+.burst{width:150px;height:150px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle,rgba(65,242,165,.35),transparent 70%);animation:pop .8s ease-out both}
+.burst .ic{color:var(--green)}
+@keyframes pop{0%{transform:scale(.4);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+.sailbadge{animation:pop .9s .1s ease-out both}
+/* overlays */
+.veil{position:fixed;inset:0;z-index:40;display:grid;place-items:center;background:rgba(3,10,26,.82);backdrop-filter:blur(6px);padding:20px}
+.veil .card{padding:30px;max-width:520px;text-align:center;display:grid;gap:12px;justify-items:center}
+.modal{position:fixed;inset:0;z-index:60;display:grid;place-items:center;background:rgba(3,10,26,.78);padding:16px}
+.modal[hidden]{display:none}
+.mbox{width:100%;max-width:560px;max-height:90vh;overflow:auto;padding:26px;display:grid;gap:16px}
+.mact{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+.toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,30px);opacity:0;z-index:70;background:#10285a;border:1px solid var(--line);padding:12px 18px;border-radius:14px;transition:.3s;max-width:min(92vw,560px);pointer-events:none}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+/* console pages (facilitator / developer / dashboard) */
+.console{padding:22px max(3vw,14px) 60px;display:grid;gap:18px;max-width:1500px;margin:0 auto}
+.panel{padding:20px}
+.panel h2{font-size:22px;margin-bottom:12px}
+.kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.kv div{padding:14px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid var(--line)}
+.kv b{display:block;font-family:var(--disp);font-size:26px}
+.kv span{font-size:13px;color:var(--soft)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:10px 8px;border-bottom:1px solid rgba(34,64,122,.6);vertical-align:middle}
+th{font-size:13px;color:var(--soft);font-weight:600}
+td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.scroll{overflow-x:auto}
+.tabs{display:flex;gap:6px;padding:5px;border-radius:999px;background:rgba(255,255,255,.05);border:1px solid var(--line);flex-wrap:wrap}
+.tabs button{min-height:44px;padding:0 18px;border-radius:999px;border:0;background:none;cursor:pointer;font-weight:600;color:var(--soft)}
+.tabs button[aria-selected=true]{background:var(--panel2);color:var(--ink);box-shadow:inset 0 0 0 1px var(--cyan)}
+.sw{display:inline-flex;align-items:center;gap:10px;cursor:pointer;min-height:44px}
+.sw input{width:22px;height:22px;accent-color:var(--cyan)}
+details.sec{border:1px solid var(--line);border-radius:16px;background:rgba(12,31,69,.7)}
+details.sec>summary{cursor:pointer;padding:16px 20px;font-family:var(--disp);font-weight:700;font-size:18px;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:10px}
+details.sec>summary::-webkit-details-marker{display:none}
+details.sec[open]>summary{border-bottom:1px solid var(--line)}
+details.sec .in{padding:18px 20px;display:grid;gap:14px}
+.fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
+.fgrid .input{min-height:46px;font-size:16px;padding:9px 12px}
+.qed{padding:14px;border:1px solid var(--line);border-radius:14px;display:grid;gap:10px;background:rgba(5,15,36,.5)}
+.oprow{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:center}
+.adminnav{display:flex;gap:6px;flex-wrap:wrap}
+.adminnav a{color:var(--soft);text-decoration:none;padding:8px 12px;border-radius:10px;font-size:14px;font-weight:600;min-height:44px;display:inline-flex;align-items:center}
+.adminnav a[aria-current=page]{color:var(--ink);background:var(--panel2)}
+/* dashboard */
+.dash{min-height:100vh;display:grid;grid-template-rows:auto auto minmax(0,1fr);gap:14px;padding:16px max(2vw,14px)}
+.dhead{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.dhead h1{font-size:clamp(22px,2.2vw,32px)}
+.stats{display:flex;gap:10px;flex-wrap:wrap}
+.stat{padding:8px 14px;border-radius:14px;background:rgba(255,255,255,.05);border:1px solid var(--line);line-height:1.2}
+.stat b{font-family:var(--disp);font-size:22px;display:block}.stat span{font-size:12px;color:var(--soft)}
+.dbody{position:relative;min-height:420px;border-radius:22px;border:1px solid var(--line);background:rgba(6,22,58,.6);overflow:hidden}
+.ggrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:10px;padding:14px;align-content:start;max-height:100%;overflow:auto}
+.gt{padding:12px;border-radius:16px;border:1px solid var(--line);background:rgba(8,26,58,.9);display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 10px;align-items:center}
+.gt .mk{grid-row:span 2;width:42px;height:42px;border-radius:50%;display:grid;place-items:center;border:2px solid;color:#03122b}
+.gt b{font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gt .sub{font-size:12px;color:var(--soft);white-space:nowrap}
+.gt .pips{grid-column:1/-1;display:flex;gap:4px;margin-top:4px}
+.gt .pips i{flex:1;height:18px;border-radius:6px;font-size:11px;font-style:normal;font-weight:700;display:grid;place-items:center;border:1px solid var(--line);color:var(--muted)}
+.gt.s-registered .mk{background:#3a4866;border-color:#5b6b8c;color:#dbe3f5}
+.gt.s-in_progress .mk{background:var(--blue);border-color:#9cc0ff;color:#fff}
+.gt.s-completed{border-color:var(--green)}
+.gt.s-completed .mk{background:var(--green);border-color:#fff;animation:glow 2.4s ease-in-out infinite}
+.gt.idle .mk{box-shadow:0 0 0 3px var(--amber)}
+@keyframes glow{0%,100%{box-shadow:0 0 6px 1px rgba(65,242,165,.6)}50%{box-shadow:0 0 22px 6px rgba(65,242,165,.75)}}
+.mcols{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;padding:16px;height:100%;align-content:start}
+.mcol h3{display:flex;align-items:center;gap:10px;margin-bottom:10px;font-size:17px}
+.mcol h3 .code{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;color:#03122b;font-weight:800}
+.mt{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;align-items:center;padding:12px;border-radius:16px;border:1px solid var(--line);background:rgba(8,26,58,.9);margin-bottom:10px}
+.mt.full{border-color:var(--c);box-shadow:0 0 30px -8px var(--c)}
+.mt b{font-size:14px;line-height:1.25}
+.mt .sub{font-size:12px;color:var(--soft)}
+.ring{width:66px;height:66px}
+.net{position:absolute;inset:0;width:100%;height:100%}
+.net .edge{fill:none;stroke-width:1.1;opacity:.22}
+.net .edge.new{stroke-dasharray:600;stroke-dashoffset:600;animation:draw 1.4s ease-out forwards;opacity:.7}
+.net.revealed .edge{opacity:.55;stroke-dasharray:6 10;animation:flow 2.4s linear infinite}
+@keyframes draw{to{stroke-dashoffset:0}}@keyframes flow{to{stroke-dashoffset:-32}}
+.net text{font-family:Inter,system-ui,sans-serif;fill:var(--soft);font-size:12px}
+.net .lbl{fill:var(--ink);font-weight:700}
+.legend{position:absolute;left:14px;bottom:12px;display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--soft);background:rgba(5,15,36,.7);padding:8px 12px;border-radius:12px}
+.legend span{display:inline-flex;gap:6px;align-items:center}
+.legend i{width:12px;height:12px;border-radius:50%;display:inline-block}
+.ready{padding:12px 18px;border-radius:14px;border:1.5px solid var(--green);background:rgba(65,242,165,.1);display:flex;gap:10px;align-items:center;font-weight:600}
+.empty{padding:40px;text-align:center;color:var(--soft);display:grid;gap:10px;justify-items:center}
+/* final animation */
+.final{position:fixed;inset:0;z-index:90;background:#020817;overflow:hidden}
+.final[hidden]{display:none}
+.final svg.fs{position:absolute;inset:0;width:100%;height:100%}
+.fin-t{position:absolute;left:0;right:0;top:12%;text-align:center;opacity:0;transform:translateY(16px);transition:opacity 1.6s,transform 1.6s;padding:0 16px}
+.fin-t h1{font-size:clamp(34px,6vw,92px);letter-spacing:.04em;color:#fff;text-shadow:0 0 30px rgba(159,246,255,.8),0 0 70px rgba(65,242,165,.5)}
+.fin-t p{margin-top:14px;font-family:var(--disp);font-weight:600;font-size:clamp(18px,2.4vw,32px);color:#e6fbff;opacity:0;transition:opacity 1.6s 1.2s}
+.final.s9 .fin-t{opacity:1;transform:none}.final.s9 .fin-t p{opacity:1}
+.fin-cap{position:absolute;left:50%;bottom:86px;transform:translateX(-50%);background:rgba(2,8,23,.72);padding:8px 16px;border-radius:10px;font-size:16px;color:#dbe8ff;max-width:90vw;text-align:center}
+.fin-ctl{position:absolute;right:16px;bottom:16px;display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.fin-ctl .btn{background:rgba(17,41,90,.8)}
+.final .sail{transform:scaleY(0);transform-box:fill-box;transform-origin:50% 100%;transition:transform 2.2s cubic-bezier(.2,.8,.2,1)}
+.final.s5 .sail{transform:scaleY(1)}
+.final .nl{opacity:.12;transition:opacity .8s}.final .beam{opacity:0;transition:opacity 1.2s}.final.s4 .beam{opacity:.14}
+.final.s4 .nl{opacity:1}
+.final .win{fill:#1d3a6e;transition:fill 1s}.final.s4 .win{fill:#fff3c4}
+.final .shipmove{transform-box:fill-box;transform-origin:50% 92%;transition:transform 13s cubic-bezier(.45,0,.3,1)}
+.final.s6 .shipmove{transform:translate(860px,6px) scale(.58)}
+.final .wake{opacity:0;transition:opacity 2s}.final.s6 .wake{opacity:.7}
+.final .aur{opacity:0;transition:opacity 4s}.final.s8 .aur{opacity:1}
+.final .aur path{animation:sway 9s ease-in-out infinite alternate}
+.final .aur path+path{animation-duration:12s}
+@keyframes sway{to{transform:translateX(-60px) scaleY(1.12)}}
+.final .hz{opacity:.25;transition:opacity 4s}.final.s7 .hz{opacity:1}
+.final .fnet{opacity:0;transition:opacity 1.5s}.final.s1 .fnet{opacity:1}.final.s6 .fnet{opacity:.18;transition:opacity 4s}
+.final .fn{opacity:0;transition:opacity .8s}
+.final.s1 .fn.g{opacity:1}.final.s2 .fn.m{opacity:1}.final.s3 .fn.c{opacity:1}
+.final .fe{stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 3s ease-out}
+.final.s2 .fe.gm{stroke-dashoffset:0}.final.s3 .fe.mc{stroke-dashoffset:0}.final.s3 .fe.cs{stroke-dashoffset:0;transition-delay:1.4s}
+.final .stars circle{animation:tw 3s ease-in-out infinite alternate}
+@keyframes tw{to{opacity:.3}}
+@media (max-width:900px){.hero{grid-template-columns:1fr}.steps{grid-template-columns:repeat(2,minmax(0,1fr))}.brief{grid-template-columns:1fr}.mcols{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:760px){.map{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"ship ship" "e p" "i c"}.mgrid{grid-template-columns:1fr}.opts{grid-template-columns:1fr}.grid2{grid-template-columns:1fr}}
+@media (max-width:600px){.steps{grid-template-columns:1fr}.mcols{grid-template-columns:1fr}.bar .meter i{display:none}.dest{min-height:0}
+  table{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding-block:10px;border-bottom:1px solid var(--line)}.stack td{display:flow-root;border:0;padding:3px 0;padding-inline-start:8em;text-align:start}.stack td::before{content:attr(data-l);float:inline-start;width:7.5em;margin-inline-start:-8em;color:var(--soft)}.stack td:empty{display:none}}
+@media (max-height:560px) and (orientation:landscape){.screen{place-items:start center}.dest{min-height:0;padding:14px}.opt{min-height:62px}.mcard{min-height:0}}
+.rm *, .rm *::before, .rm *::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+.rm .final .fin-t,.rm .final .fin-t p,.rm .final .fn,.rm .final .fnet,.rm .final .aur,.rm .final .nl{transition-duration:.6s!important}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+</style>
+<script>new MutationObserver(()=>{for(const c of document.querySelectorAll('.stack td:not([data-l])')){let i=0,p=c;while(p=p.previousElementSibling)i+=p.colSpan;c.dataset.l=c.closest('table').rows[0].cells[i]?.textContent||''}}).observe(document,{childList:true,subtree:true})</script>
+</head>
+<body>
+<div id="app"><div class="screen"><div class="empty"><p>Loading the voyage…</p></div></div></div>
+<div id="modal" class="modal" hidden></div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<div id="final" class="final" hidden role="dialog" aria-label="Site Mission 2027 activation"></div>
+<script>
+{
+'use strict';
+/* ================= utilities ================= */
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const now=()=>Date.now(), sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const LS={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}},del(k){try{localStorage.removeItem(k)}catch(e){}}};
+const clone=o=>JSON.parse(JSON.stringify(o));
+const byOrder=(a,b)=>(+a.order||0)-(+b.order||0);
+const safeColor=c=>/^#[0-9a-f]{3,8}$/i.test(String(c||''))?c:'#33e6f2';
+const pad=n=>String(n).padStart(2,'0');
+const fmtClock=ms=>{const s=Math.max(0,Math.floor(ms/1000));return pad(Math.floor(s/60))+':'+pad(s%60)};
+const fmtTime=t=>t?new Date(t).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'}):'—';
+function cyrb53(str,seed=0){let h1=0xdeadbeef^seed,h2=0x41c6ce57^seed;for(let i=0,ch;i<str.length;i++){ch=str.charCodeAt(i);h1=Math.imul(h1^ch,2654435761);h2=Math.imul(h2^ch,1597334677)}h1=Math.imul(h1^(h1>>>16),2246822507);h1^=Math.imul(h2^(h2>>>13),3266489909);h2=Math.imul(h2^(h2>>>16),2246822507);h2^=Math.imul(h1^(h1>>>13),3266489909);return(4294967296*(2097151&h2)+(h1>>>0)).toString(36)}
+function seeded(seed){let h=(parseInt(cyrb53(seed).slice(0,7),36)|0)||7;return()=>{h^=h<<13;h^=h>>>17;h^=h<<5;return((h>>>0)%100000)/100000}}
+function shuffle(arr,seed){const a=arr.slice(),r=seeded(seed);for(let i=a.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+const nameKey=n=>{const k=String(n).toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,60);return k||('n'+cyrb53(String(n).toLowerCase()))};
+const genId=()=>{const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';let s='G';for(let i=0;i<5;i++)s+=A[Math.floor(Math.random()*A.length)];return s};
+let reduced=matchMedia('(prefers-reduced-motion: reduce)').matches||LS.get('smg:reduced')===true;
+document.documentElement.classList.toggle('rm',reduced);
+
+const ICONS={compass:'M12 21a9 9 0 100-18 9 9 0 000 18zM15.5 8.5l-2 5-5 2 2-5z',shield:'M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z',target:'M12 21a9 9 0 100-18 9 9 0 000 18zM12 16a4 4 0 100-8 4 4 0 000 8zM12 12.5a.5.5 0 100-1 .5.5 0 000 1z',flag:'M5 21V4M5 4h12l-2.5 4L17 12H5',growth:'M12 21v-9M12 12c0-4 3-7 7-7 0 4-3 7-7 7zM12 15c0-3-2.5-5-6-5 0 3 2.5 5 6 5z',people:'M9 11a3 3 0 100-6 3 3 0 000 6zM17 11a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M15.5 14.2c3-.5 5.5 1.8 5.5 5.8',star:'M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z',bulb:'M9 18h6M10 21h4M12 3a6 6 0 00-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0012 3z',chart:'M4 20V10M10 20V4M16 20v-7M21 20H3',device:'M7 3h10a1 1 0 011 1v16a1 1 0 01-1 1H7a1 1 0 01-1-1V4a1 1 0 011-1zM11 18h2',coin:'M12 21a9 9 0 100-18 9 9 0 000 18zM14.5 9.2c-.5-1-1.5-1.6-2.5-1.6-1.4 0-2.5.8-2.5 2s1.1 1.7 2.5 2 2.5.8 2.5 2-1.1 2-2.5 2c-1 0-2-.6-2.5-1.6M12 6v1.6M12 16.4V18',leaf:'M5 19c0-8 5-14 15-14 0 10-6 15-14 15M5 19l7-7',lock:'M6 11h12v10H6zM8 11V8a4 4 0 018 0v3',check:'M5 12.5l4.5 4.5L19 7',ship:'M3 16h18l-2.5 4.5h-13zM12 3v12M12 4l6.5 10H12M11 6l-5 8h5',anchor:'M12 8a2 2 0 100-4 2 2 0 000 4zM12 8v13M5 13a7 7 0 0014 0M8 11h8',map:'M9 4L3 6v14l6-2 6 2 6-2V4l-6 2zM9 4v14M15 6v14',clock:'M12 21a9 9 0 100-18 9 9 0 000 18zM12 7v5l3 2',book:'M4 5a2 2 0 012-2h13v16H6a2 2 0 00-2 2zM4 19V5M8 7h7',arrow:'M5 12h14M13 6l6 6-6 6',back:'M19 12H5M11 6l-6 6 6 6',refresh:'M20 11a8 8 0 10-2.3 5.7M20 4v7h-7',x:'M6 6l12 12M18 6L6 18',expand:'M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5',play:'M7 4l13 8-13 8z',pause:'M8 5v14M16 5v14',alert:'M12 3l9.5 17h-19zM12 10v4M12 17.5v.5',wifi:'M2 9a15 15 0 0120 0M5 12.5a10 10 0 0114 0M8.5 16a5 5 0 017 0M12 19.5v.5',hand:'M8 13V5.5a1.5 1.5 0 013 0V12M11 11V4.5a1.5 1.5 0 013 0V12M14 11.5V6a1.5 1.5 0 013 0v8c0 4-2.5 7-6.5 7S5 18 4 15l-1.2-3.4a1.4 1.4 0 012.5-1.2L8 13',edit:'M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4',trash:'M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3',copy:'M9 9h11v11H9zM5 15H4V4h11v1',users:'M8 11a3.5 3.5 0 100-7 3.5 3.5 0 000 7zM2 21c0-3.9 2.7-7 6-7s6 3.1 6 7M16 4.3a3.5 3.5 0 010 6.4M18 14.5c2.4.8 4 3.4 4 6.5',sparkle:'M12 3v5M12 16v5M3 12h5M16 12h5M6 6l3 3M15 15l3 3M6 18l3-3M15 9l3-3',home:'M3 11l9-8 9 8M5 9.5V20h5v-6h4v6h5V9.5',logout:'M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10',menu:'M4 7h16M4 12h16M4 17h16'};
+const icon=(n,s=22,cls='')=>`<svg class="ic ${cls}" width="${s}" height="${s}" viewBox="0 0 24 24" aria-hidden="true"><path d="${ICONS[n]||ICONS.compass}"/></svg>`;
+
+function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('on'),3600)}
+let modalPrevFocus=null;
+function modal({title,body='',actions=[{label:'Close'}],dismiss=true}){
+  const m=$('#modal');modalPrevFocus=document.activeElement;
+  m.innerHTML=`<div class="mbox card" role="dialog" aria-modal="true" aria-labelledby="mt"><h2 id="mt">${esc(title)}</h2><div class="mbody stack">${body}</div><div class="mact">${actions.map((a,i)=>`<button type="button" class="btn ${a.cls||''}" data-mi="${i}">${esc(a.label)}</button>`).join('')}</div></div>`;
+  m.hidden=false;
+  m.onclick=async e=>{
+    if(e.target===m&&dismiss){closeModal();return}
+    const b=e.target.closest('[data-mi]');if(!b)return;
+    const a=actions[+b.dataset.mi];b.disabled=true;
+    let keep=false;try{if(a.fn)keep=(await a.fn(m))===false}catch(err){console.error(err);keep=true;toast('Something went wrong. Please try again.')}
+    b.disabled=false;if(!keep)closeModal();
+  };
+  m.onkeydown=e=>{if(e.key==='Escape'&&dismiss)closeModal();if(e.key==='Enter'&&e.target.matches('input')){e.preventDefault();$('.mact .btn.primary',m)?.click()}};
+  setTimeout(()=>{($('input,textarea,select',m)||$('[data-mi]:last-child',m))?.focus()},30);
+}
+function closeModal(){const m=$('#modal');m.hidden=true;m.innerHTML='';modalPrevFocus?.focus?.()}
+
+/* ================= data store: shared live database, or rehearsal mode on this device ================= */
+const PFX='smg2027:';const lsubs=new Set();
+const lread=p=>LS.get(PFX+p);
+function lcoll(c){const out=[];try{const pre=PFX+c+'/';for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith(pre)&&!k.slice(pre.length).includes('/')){const d=LS.get(k);if(d)out.push({...d,_id:k.slice(pre.length)})}}}catch(e){}return out.sort((a,b)=>a._id<b._id?-1:1)}
+function lfire(path){for(const s of lsubs){const hit=s.doc?s.path===path:(path.startsWith(s.path+'/')&&!path.slice(s.path.length+1).includes('/'));if(hit)s.run()}}
+addEventListener('storage',e=>{if(e.key&&e.key.startsWith(PFX))lfire(e.key.slice(PFX.length))});
+const Store={db:null,
+  async get(p){if(this.db){const s=await this.db.doc(p).get();return s.exists?s.data():null}return lread(p)},
+  async list(c){if(this.db){const q=await this.db.collection(c).get();return q.docs.map(d=>({...d.data(),_id:d.id}))}return lcoll(c)},
+  async set(p,d){if(this.db)return retry(()=>this.db.doc(p).set(d));LS.set(PFX+p,d);lfire(p)},
+  async update(p,d){if(this.db)return retry(()=>this.db.doc(p).update(d));const o=lread(p);if(!o)throw{code:'invalid_argument'};LS.set(PFX+p,{...o,...d});lfire(p)},
+  async del(p){if(this.db)return retry(()=>this.db.doc(p).delete());LS.del(PFX+p);lfire(p)},
+  watch(p,cb,err){if(this.db)return this.db.doc(p).onSnapshot(s=>cb(s.exists?s.data():null,s.metadata),e=>{console.warn(p,e);err&&err(e)});const s={doc:true,path:p,run:()=>cb(lread(p),{fromCache:false})};lsubs.add(s);setTimeout(s.run,0);return()=>lsubs.delete(s)},
+  watchAll(c,cb,err){if(this.db)return this.db.collection(c).onSnapshot(q=>cb(q.docs.map(d=>({...d.data(),_id:d.id})),q.metadata),e=>{console.warn(c,e);err&&err(e)});const s={doc:false,path:c,run:()=>cb(lcoll(c),{fromCache:false})};lsubs.add(s);setTimeout(s.run,0);return()=>lsubs.delete(s)},
+  async claim(p,data){
+    if(this.db){const ref=this.db.doc(p);let r={acquired:true};try{r=await ref.acquire({holder:data.groupId,ttlMs:5000})}catch(e){}
+      if(!r.acquired)return false;const s=await ref.get();if(s.exists&&s.data()?.groupId)return false;await ref.set(data);return true}
+    if(lread(p))return false;LS.set(PFX+p,data);lfire(p);return true}
+};
+async function retry(fn){try{return await fn()}catch(e){if(e&&e.code==='unavailable'){await sleep(400+Math.random()*800);return fn()}throw e}}
+
+/* ================= global state ================= */
+const S={mode:'connecting',admin:false,canWrite:null,event:null,live:null,content:null,keys:null,eventOk:false,contentOk:false,liveOk:false,online:navigator.onLine,lastUpdate:0,groupsRaw:[],ctrl:{},groupsOk:false,slow:false};
+const DEF_EVENT={eventName:'Sail with Purpose · Site Mission 2027',eventId:'SM2027',startTime:'',endTime:'',maxGroups:80,finalAnimationEnabled:true,
+  logic:{questionsPerMission:3,maxAttempts:0,hintThreshold:2,categoryLocking:true,shuffleAnswers:true,shuffleOnRetry:true,timeoutMin:5,timerVisible:true,durationMin:60,exceptionsCount:true},
+  dashboard:{view:'groups',refreshSec:5,intensity:'normal',labelMode:'name',showPercent:true,rotateSec:0}};
+const DEF_LIVE={status:'live',registrationOpen:true,denominatorLocked:false,finalTrigger:0,finalAt:0,startedAt:0};
+const ev=()=>{const e=S.event||{};return{...DEF_EVENT,...e,logic:{...DEF_EVENT.logic,...(e.logic||{})},dashboard:{...DEF_EVENT.dashboard,...(e.dashboard||{})}}};
+const lv=()=>({...DEF_LIVE,...(S.live||{})});
+
+const CT={
+  cats(){return(S.content?.categories||[]).slice().sort(byOrder).slice(0,4)},
+  cat(id){return(S.content?.categories||[]).find(c=>c.id===id)},
+  missions(cid){return(S.content?.missions||[]).filter(m=>m.categoryId===cid&&m.active!==false).sort(byOrder)},
+  all(){return CT.cats().flatMap(c=>CT.missions(c.id))},
+  mission(id){return(S.content?.missions||[]).find(m=>m.id===id)},
+  qs(mid){const n=+ev().logic.questionsPerMission||0;const a=(S.content?.questions||[]).filter(q=>q.missionId===mid&&q.active!==false).sort(byOrder);return n>0?a.slice(0,n):a},
+  ok(q,opt){return !!(S.content&&q&&opt)&&cyrb53(S.content.salt+'|'+q.id+'|'+opt)===q.check}
+};
+function evalGroup(g){
+  const ms=CT.all(),solved=g.solved||{};
+  const done=ms.filter(m=>{const qs=CT.qs(m.id);return qs.length>0&&qs.every(q=>CT.ok(q,solved[q.id]))}).map(m=>m.id);
+  const catsDone=CT.cats().filter(c=>{const mm=CT.missions(c.id);return mm.length>0&&mm.every(m=>done.includes(m.id))}).map(c=>c.id);
+  const total=ms.length||12,exc=!!g.exception;
+  const complete=(exc&&ev().logic.exceptionsCount)||(ms.length>0&&done.length===ms.length);
+  const started=Object.keys(solved).length>0||!!g.currentCategory||Object.keys(g.attempts||{}).length>0;
+  const status=complete?'completed':started?'in_progress':'registered';
+  const idle=status==='in_progress'&&now()-(g.lastActivity||0)>(+ev().logic.timeoutMin||5)*60000;
+  return{done,catsDone,total,complete,exc,status,idle,pct:complete?100:Math.round(done.length/total*100)};
+}
+/* merge each group record with facilitator-owned control fields */
+function groups(){
+  return S.groupsRaw.map(d=>{const c=S.ctrl[d._id]||{};let g={...d,groupId:d.groupId||d._id,name:c.name||d.groupName||'Group',include:c.include??d.include??true,exception:c.exception||null,removed:!!c.removed};
+    if((c.resetEpoch||0)>(d.resetEpoch||0))g={...g,solved:{},attempts:{},currentCategory:null,currentMission:null};
+    g.ev=evalGroup(g);return g}).filter(g=>!g.removed).sort((a,b)=>(a.registeredAt||0)-(b.registeredAt||0));
+}
+function aggregate(){
+  const gs=groups(),inc=gs.filter(g=>g.include!==false),N=inc.length,ms=CT.all();
+  const mstat=ms.map(m=>{const n=inc.filter(g=>g.ev.done.includes(m.id)||(g.ev.exc&&g.ev.complete)).length;return{m,n,N,pct:N?Math.round(n/N*100):0,full:N>0&&n===N}});
+  const completed=inc.filter(g=>g.ev.complete).length;
+  const ready=N>0&&completed===N&&mstat.length>0&&mstat.every(x=>x.full);
+  return{gs,inc,N,mstat,completed,inProg:inc.filter(g=>g.ev.status==='in_progress').length,ready,fullCount:mstat.filter(x=>x.full).length,
+    overall:N&&ms.length?Math.round(inc.reduce((s,g)=>s+(g.ev.complete?ms.length:g.ev.done.length),0)/(N*ms.length)*100):0};
+}
+
+/* ================= admin login =================
+   Only a PBKDF2 hash of the password is in this page. The database rules are the real lock:
+   saving config, content and facilitator changes also requires Editor access to the page. */
+const AUTH={salt:'swp-adm-7f3k2q',hash:'28612b3079cc372ceef9f78c68b929981944f5caf23b1ab7fdec719fa6927f38',mem:false,fails:0,until:0,
+  ok(){if(this.mem)return true;try{const a=JSON.parse(sessionStorage.getItem('smg:admin')||'null');return !!a&&a.h===this.hash.slice(0,16)&&a.exp>now()}catch(e){return false}}};
+async function pbkdf(pw){const enc=new TextEncoder();const k=await crypto.subtle.importKey('raw',enc.encode(pw),'PBKDF2',false,['deriveBits']);const b=await crypto.subtle.deriveBits({name:'PBKDF2',salt:enc.encode(AUTH.salt),iterations:150000,hash:'SHA-256'},k,256);return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
+async function tryLogin(pw){
+  if(now()<AUTH.until)return'wait';let h;try{h=await pbkdf(pw)}catch(e){return'unsupported'}
+  if(h===AUTH.hash){AUTH.fails=0;AUTH.mem=true;try{sessionStorage.setItem('smg:admin',JSON.stringify({h:AUTH.hash.slice(0,16),exp:now()+12*3600e3}))}catch(e){}return'ok'}
+  if(++AUTH.fails>=5){AUTH.fails=0;AUTH.until=now()+30000}return'bad'}
+function logout(){AUTH.mem=false;try{sessionStorage.removeItem('smg:admin')}catch(e){}closeModal();toast('Logged out of admin.');goHome()}
+function goHome(){P.screen='welcome';P.ui.fb=null;P.err='';if(view()!=='play')location.hash='play';else renderPlay()}
+const ADMIN_PAGES=[['home','Home','home'],['facilitator','Facilitator','users'],['developer','Content editor','edit'],['dashboard','Live dashboard','chart']];
+function adminMenu(){modal({title:'Admin menu',body:`<div style="display:grid;gap:10px">${ADMIN_PAGES.map(([h,l,i])=>h==='home'?`<button class="btn" data-go-home>${icon(i,18)}${l} (first page)</button>`:`<a class="btn ${h===view()?'primary':''}" href="#${h}">${icon(i,18)}${l}</a>`).join('')}</div>`,actions:[{label:'Log out',cls:'warn',fn:()=>logout()},{label:'Close',cls:'ghost'}]});const b=$('#modal [data-go-home]');if(b)b.onclick=()=>{closeModal();goHome()}}
+function renderLogin(next){
+  $('#app').innerHTML=`<header class="bar"><button class="brand" data-act="home" style="background:none;border:0;cursor:pointer;min-height:44px">${icon('ship',24)}<span>Sail with Purpose</span></button><div class="grow"></div><button class="btn small ghost" data-act="home">${icon('home',18)}Home</button></header>
+  <main class="screen"><form id="loginform" class="card narrow stack wrap" style="padding:clamp(24px,3vw,40px)" novalidate><span style="color:var(--cyan)">${icon('lock',40)}</span><h1>Admin login</h1><p class="muted">For facilitators and the content team. Enter the admin password to manage missions, questions, the live dashboard and the event.</p>
+  <div class="field"><label for="pw">Password</label><input class="input" id="pw" type="password" autocomplete="current-password" aria-describedby="pwerr"><div id="pwerr" aria-live="polite"></div></div>
+  <label class="sw"><input type="checkbox" id="pwshow"> Show password</label>
+  <div class="row"><button class="btn primary" type="submit">Log in</button><button class="btn ghost" type="button" data-act="home">Back to the game</button></div></form></main>`;
+  const f=$('#loginform'),pw=$('#pw');pw.focus();
+  $('#pwshow').onchange=e=>{pw.type=e.target.checked?'text':'password'};
+  f.onsubmit=async e=>{e.preventDefault();const btn=$('button[type=submit]',f);btn.disabled=true;const r=await tryLogin(pw.value);btn.disabled=false;
+    const msg={bad:'That password is not correct.',wait:'Too many attempts. Please wait 30 seconds and try again.',unsupported:'This browser cannot check the password. Please use an up-to-date browser.'}[r];
+    if(r==='ok'){toast('Welcome. You are logged in as admin.');render();return}
+    $('#pwerr').innerHTML=`<p class="err">${icon('alert',16)}${esc(msg)}</p>`;pw.select()};
+}
+
+/* ================= router ================= */
+const VIEWS=['play','dashboard','facilitator','developer'];
+const view=()=>{const h=location.hash.slice(1);return VIEWS.includes(h)?h:'play'};
+let teardown=[];
+function cleanup(){teardown.forEach(f=>{try{f()}catch(e){}});teardown=[]}
+function render(){
+  const v=view();
+  document.body.dataset.view=v;
+  if(S.mode==='connecting'){$('#app').innerHTML=`<div class="screen"><div class="empty">${icon('compass',40)}<p>Connecting to the voyage…</p></div></div>`;return}
+  if(v==='play')return renderPlay();
+  if(v==='dashboard')return renderDash();
+  if(!AUTH.ok())return renderLogin(v);
+  if(v==='facilitator')return renderFac();
+  if(v==='developer')return renderDev();
+}
+addEventListener('hashchange',()=>{cleanup();closeModal();render()});
+
+/* ======================================================================
+   PLAYER
+   ====================================================================== */
+const DEVICE='smg:device';
+const P={g:null,ctrl:null,screen:'welcome',ui:{},unsubG:null,unsubC:null,saving:false,dirty:false,failing:false,denied:false,lastSaved:0,form:{name:'',num:'',table:'',avatar:0},err:'',lastScreen:''};
+const AVATARS=['#33e6f2','#41f2a5','#9479ff','#ff52b9','#4a8dff','#ffbf47'];
+const gname=()=>(P.ctrl&&P.ctrl.name)||P.g?.groupName||'';
+function backup(){if(P.g)LS.set('smg:backup:'+P.g.groupId,P.g)}
+
+function attachGroup(g,pushLocal){
+  P.g=g;LS.set(DEVICE,{groupId:g.groupId});backup();
+  P.unsubG?.();P.unsubC?.();
+  P.unsubG=Store.watch('groups/'+g.groupId,(d,meta)=>{
+    S.lastUpdate=now();
+    if(!P.g)return;
+    if(!d){if(meta&&meta.fromCache===false&&!P.saving&&!P.dirty&&S.mode==='live')markRemoved();return}
+    const L=P.g,re=(d.resetEpoch||0),le=(L.resetEpoch||0);
+    if(re>le||(re===le&&(d.rev||0)>(L.rev||0))){P.g=d;backup();if(re>le){P.screen='map';P.ui={};toast('A facilitator reset your progress. Start again from the map.')}rerender()}else chrome();
+  },()=>{P.failing=true;chrome()});
+  P.unsubC=Store.watch('ctrl/'+g.groupId,c=>{
+    P.ctrl=c||null;if(!P.g)return;
+    if(c&&c.removed){markRemoved();return}
+    if(c&&(c.resetEpoch||0)>(P.g.resetEpoch||0))applyReset(c.resetEpoch);
+    rerender();
+  });
+  if(pushLocal)queueSave();
+}
+function applyReset(ep){const g=P.g;P.g={...g,currentCategory:null,currentMission:null,completedCategories:[],completedMissions:[],overallProgress:0,solved:{},attempts:{},briefOpened:{},log:[],status:'registered',completedAt:null,resetEpoch:ep,rev:(g.rev||0)+1};P.screen='map';P.ui={};backup();queueSave();toast('A facilitator reset your progress. Start again from the map.')}
+function markRemoved(){P.unsubG?.();P.unsubC?.();P.g=null;P.ctrl=null;LS.del(DEVICE);P.screen='removed';rerender(true)}
+function commit(mut){
+  const g=clone(P.g);g.solved=g.solved||{};g.attempts=g.attempts||{};g.briefOpened=g.briefOpened||{};g.log=g.log||[];
+  mut(g);const e=evalGroup(g);
+  if(g.currentCategory&&e.catsDone.includes(g.currentCategory))g.currentCategory=null;
+  g.completedMissions=e.done;g.completedCategories=e.catsDone;g.overallProgress=e.pct;g.status=e.status;g.lastActivity=now();g.rev=(g.rev||0)+1;
+  if(e.complete&&!g.completedAt)g.completedAt=now();
+  P.g=g;backup();queueSave();return e;
+}
+async function queueSave(){
+  P.dirty=true;chrome();if(P.saving)return;P.saving=true;
+  while(P.dirty&&P.g){
+    P.dirty=false;const snap=P.g;
+    try{await Store.set('groups/'+snap.groupId,snap);P.failing=false;P.lastSaved=now()}
+    catch(e){P.dirty=true;P.failing=true;chrome();
+      if(e&&(e.code==='invalid_argument'||e.code==='revoked'||e.code==='not_granted')){P.denied=true;break}
+      if(e&&e.code==='quota_exceeded'){toast('The event database is full. Please tell a facilitator.');break}
+      await sleep(3000)}
+  }
+  P.saving=false;chrome();
+}
+addEventListener('online',()=>{S.online=true;if(P.g&&(P.dirty||P.failing))queueSave();chrome()});
+addEventListener('offline',()=>{S.online=false;chrome()});
+
+async function resumeDevice(){
+  const d=LS.get(DEVICE);if(!d||!d.groupId)return false;
+  let g=null;try{g=await Store.get('groups/'+d.groupId)}catch(e){}
+  const b=LS.get('smg:backup:'+d.groupId);
+  let c=null;try{c=await Store.get('ctrl/'+d.groupId)}catch(e){}
+  if(c&&c.removed){LS.del(DEVICE);return false}
+  let use=g,pushLocal=false;
+  if(b&&(!g||((b.resetEpoch||0)>=(g.resetEpoch||0)&&(b.rev||0)>(g.rev||0)))){use=b;pushLocal=true}
+  if(!use){LS.del(DEVICE);return false}
+  P.ctrl=c;attachGroup(use,pushLocal);P.screen=resumeScreen();return true;
+}
+function resumeScreen(){
+  const g=P.g;if(!g)return'welcome';const e=evalGroup(g);
+  if(e.complete)return'allDone';
+  if(g.currentMission&&!e.done.includes(g.currentMission)&&g.briefOpened?.[g.currentMission])return'question';
+  if(g.currentCategory)return'category';
+  return'map';
+}
+function rerender(force){if(view()!=='play')return;const a=document.activeElement;if(!force&&a&&a.matches('#app input,#app textarea,#app select')){chrome();return}renderPlay()}
+
+function statusChip(){
+  if(S.mode==='local')return`<span class="chip" title="Data stays in this browser"><span class="dot off"></span>Rehearsal mode</span>`;
+  if(P.denied)return`<span class="chip"><span class="dot warn"></span>Can't save · ask a facilitator</span>`;
+  if(!S.online||P.failing)return`<span class="chip"><span class="dot warn"></span>Reconnecting · progress kept here</span>`;
+  if(P.saving||P.dirty)return`<span class="chip"><span class="dot busy"></span>Saving…</span>`;
+  return`<span class="chip"><span class="dot"></span>${P.lastSaved?'Progress saved':'Connected'}</span>`;
+}
+function timerText(){const g=P.g;if(!g)return'';const start=Math.max(g.registeredAt||0,lv().startedAt||0)||g.registeredAt;const el=now()-start,lim=(+ev().logic.durationMin||60)*60000;return`${fmtClock(Math.min(el,lim*2))} / ${fmtClock(lim)}`}
+function chrome(){
+  if(view()!=='play')return;
+  const st=$('#st');if(st)st.innerHTML=statusChip();
+  const tm=$('#tm');if(tm)tm.textContent=timerText();
+}
+function playerBar(){
+  const g=P.g,showMap=g&&!['map','welcome','register','aboard','instructions','removed','resume'].includes(P.screen);
+  const e=g?evalGroup(g):null;
+  return`<header class="bar"><button class="brand" data-act="home" aria-label="Home" style="background:none;border:0;cursor:pointer;min-height:44px">${icon('ship',24)}<span>Sail with Purpose</span></button>
+  ${g?`<div class="who"><b>${esc(gname())}</b><span>Your group</span></div>`:''}
+  <div class="grow"></div>
+  ${g&&e?`<div class="meter" aria-label="${e.done.length} of ${e.total} Site Missions activated"><i><b style="width:${e.pct}%"></b></i>${e.done.length}/${e.total}</div>`:''}
+  ${g&&ev().logic.timerVisible?`<span class="chip">${icon('clock',16)}<span id="tm">${timerText()}</span></span>`:''}
+  <span id="st">${statusChip()}</span>
+  ${P.screen!=='welcome'?`<button class="btn small ghost" data-act="home">${icon('home',18)}Home</button>`:''}
+  ${showMap?`<button class="btn small ghost" data-act="go" data-arg="map">${icon('map',18)}Journey map</button>`:''}
+  ${g?`<button class="btn small ghost" data-act="menu" aria-label="Group menu">${icon('users',18)}</button>`:''}
+  ${AUTH.ok()?`<button class="btn small ghost" data-act="amenu">${icon('menu',18)}Admin menu</button>`:P.screen==='welcome'?`<a class="btn small ghost" href="#facilitator">${icon('lock',18)}Admin login</a>`:''}
+  </header>`;
+}
+function renderPlay(){
+  const app=$('#app'),scr=P.screen;
+  const has=CT.all().length>0;
+  let body;
+  if(!has&&!['welcome','removed'].includes(scr)&&S.contentOk!==false)body=scEmpty();
+  else body=(SC[scr]||SC.welcome)();
+  let veil='';const L=lv();
+  if(P.g&&L.status==='paused')veil=`<div class="veil"><div class="card">${icon('pause',40)}<h2>Paused by the facilitator</h2><p class="muted">Take a breath. Your progress is saved and the voyage will resume shortly.</p></div></div>`;
+  else if(P.g&&L.status==='setup'&&!['welcome','register','aboard','instructions'].includes(scr))veil=`<div class="veil"><div class="card">${icon('anchor',40)}<h2>Waiting in the harbor</h2><p class="muted">Your group is registered. The voyage begins when the facilitator starts the event.</p></div></div>`;
+  app.innerHTML=playerBar()+`<main class="screen" id="main">${body}</main>`+veil;
+  if(P.lastScreen!==scr){P.lastScreen=scr;const h=$('#main h1,#main h2');if(h){h.tabIndex=-1;h.focus({preventScroll:true})}scrollTo(0,0)}
+  afterPlay();
+}
+function afterPlay(){
+  const f=$('#regform');
+  if(f){f.onsubmit=e=>{e.preventDefault();ACT.register()};
+    f.oninput=e=>{const t=e.target;if(t.name in P.form)P.form[t.name]=t.value;if(t.name==='name'&&P.err){P.err='';const er=$('#nameerr');if(er)er.innerHTML=''}}}
+  const rf=$('#resform');if(rf)rf.onsubmit=e=>{e.preventDefault();ACT.doResume()};
+}
+const scEmpty=()=>`<div class="card narrow stack" style="padding:32px;text-align:center">${icon('book',40)}<h2>Mission content is not published yet</h2><p class="muted">The event team is still loading the Site Missions. Please check with your facilitator.</p></div>`;
+
+/* ---- scenes ---- */
+function heroScene(){
+  let stars='';const r=seeded('stars');for(let i=0;i<60;i++)stars+=`<circle cx="${(r()*800).toFixed(0)}" cy="${(r()*280).toFixed(0)}" r="${(r()*1.4+.3).toFixed(1)}" fill="#fff" opacity="${(r()*.6+.3).toFixed(2)}"/>`;
+  return`<svg viewBox="0 0 800 500" role="img" aria-label="A ship sailing toward a bright horizon under aurora lights"><defs>
+  <linearGradient id="hs" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#030b22"/><stop offset=".62" stop-color="#0d2a5c"/><stop offset="1" stop-color="#1a4f8c"/></linearGradient>
+  <linearGradient id="ha" x1="0" x2="1"><stop offset="0" stop-color="#41f2a5" stop-opacity="0"/><stop offset=".35" stop-color="#41f2a5"/><stop offset=".7" stop-color="#33e6f2"/><stop offset="1" stop-color="#9479ff" stop-opacity="0"/></linearGradient>
+  <linearGradient id="hb" x1="0" x2="1"><stop offset="0" stop-color="#9479ff" stop-opacity="0"/><stop offset=".5" stop-color="#ff52b9" stop-opacity=".8"/><stop offset="1" stop-color="#9479ff" stop-opacity="0"/></linearGradient>
+  <radialGradient id="hh"><stop offset="0" stop-color="#fff"/><stop offset=".3" stop-color="#bff8ff" stop-opacity=".6"/><stop offset="1" stop-color="#33e6f2" stop-opacity="0"/></radialGradient>
+  <linearGradient id="hw" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0e3a72"/><stop offset="1" stop-color="#03112a"/></linearGradient>
+  <filter id="hbl"><feGaussianBlur stdDeviation="16"/></filter><linearGradient id="hsl" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#9ff6ff"/></linearGradient></defs>
+  <rect width="800" height="500" fill="url(#hs)"/>${stars}
+  <g filter="url(#hbl)" opacity=".85"><path d="M-40 150C120 60 260 190 420 110S700 40 840 120V180C700 110 560 230 420 170S120 130 -40 210Z" fill="url(#ha)"/><path d="M80 70C240 20 360 110 520 60S720 30 840 70V100C700 70 560 140 460 110S220 70 80 120Z" fill="url(#hb)"/></g>
+  <ellipse cx="610" cy="318" rx="230" ry="46" fill="url(#hh)"/>
+  <rect y="318" width="800" height="182" fill="url(#hw)"/>
+  <g stroke="#7fe9ff" stroke-opacity=".25" stroke-width="2">${[340,362,388,420,456].map((y,i)=>`<path d="M${40+i*30} ${y}h${120+i*20}M${380+i*14} ${y+6}h${160-i*10}"/>`).join('')}</g>
+  <g transform="translate(210 318)"><path d="M-160 4C-110 10-50 8 0 6" stroke="#bff8ff" stroke-width="3" opacity=".5" fill="none"/>
+  <path d="M0 -14H230L210 16H18Z" fill="#081a3a" stroke="#33e6f2" stroke-width="2"/><path d="M150 -14V-36H195L210 -14Z" fill="#11295a" stroke="#33e6f2" stroke-width="1.5"/>
+  <line x1="105" y1="-14" x2="105" y2="-178" stroke="#e6f4ff" stroke-width="3.5"/>
+  <path d="M100 -170Q48 -95 40 -22H100Z" fill="url(#hsl)" opacity=".95"/><path d="M110 -166L222 -20H110Z" fill="url(#hsl)" opacity=".85"/>
+  <circle cx="105" cy="-184" r="4.5" fill="#fff"/><circle cx="226" cy="-6" r="4" fill="#41f2a5"/><circle cx="6" cy="-6" r="4" fill="#ff5d6c"/></g></svg>`;
+}
+function shipWidget(g,size=320){
+  const e=evalGroup(g),cats=CT.cats();const pos=[[112,'u'],[112,'l'],[208,'u'],[208,'l']];
+  const sails=cats.map((c,i)=>{const[x,t]=pos[i];const ms=CT.missions(c.id),col=safeColor(c.color);const n=ms.filter(m=>e.done.includes(m.id)).length,full=e.catsDone.includes(c.id);
+    const d=t==='u'?`M${x-30} 40H${x+30}L${x+36} 86H${x-36}Z`:`M${x-38} 94H${x+38}L${x+44} 146H${x-44}Z`;const cy=t==='u'?63:120;
+    const dots=ms.map((m,j)=>`<circle cx="${x-16+j*16}" cy="${cy+9}" r="4.6" fill="${e.done.includes(m.id)?(full?'#03122b':col):'none'}" stroke="${full?'#03122b':col}" stroke-width="1.6"/>`).join('');
+    return`<path d="${d}" fill="${full?col:'#0b1d42'}" stroke="${col}" stroke-width="2" stroke-opacity="${n?1:.45}" ${n&&!full?'stroke-dasharray="5 4"':''}/><text x="${x}" y="${cy-3}" text-anchor="middle" font-family="Sora, Inter, system-ui, sans-serif" font-weight="800" font-size="15" fill="${full?'#03122b':col}">${esc(c.code)}</text>${dots}`}).join('');
+  const lit=e.complete;
+  return`<svg viewBox="0 0 320 220" width="${size}" role="img" aria-label="Your ship: ${e.done.length} of ${e.total} missions activated">
+  <path d="M0 198C50 192 110 202 160 197S270 191 320 198" stroke="#33e6f2" stroke-opacity=".35" stroke-width="2" fill="none"/>
+  <line x1="112" y1="30" x2="112" y2="162" stroke="#cfe3ff" stroke-width="3"/><line x1="208" y1="30" x2="208" y2="162" stroke="#cfe3ff" stroke-width="3"/>
+  ${sails}
+  <path d="M40 162H290L268 194H62Z" fill="#0a1d42" stroke="${lit?'#41f2a5':'#33e6f2'}" stroke-width="2"/>
+  <circle cx="112" cy="26" r="5" fill="${lit?'#fff':'#41557c'}" ${lit?'style="filter:drop-shadow(0 0 6px #fff)"':''}/><circle cx="284" cy="172" r="4" fill="${lit?'#41f2a5':'#2b4a52'}"/><circle cx="48" cy="172" r="4" fill="${lit?'#ff5d6c':'#4a2b33'}"/></svg>`;
+}
+function miniNetwork(g){
+  const e=evalGroup(g),cats=CT.cats();let s='',W=640,H=320;const gx=60,gy=160,sx=590,sy=160;
+  cats.forEach((c,ci)=>{const col=safeColor(c.color);const hx=470,hy=50+ci*73;
+    CT.missions(c.id).forEach((m,mi)=>{const mx=230+mi*70,my=hy;const on=e.done.includes(m.id);
+      s+=`<path d="M${gx} ${gy}C${gx+90} ${gy},${mx-90} ${my},${mx} ${my}" fill="none" stroke="${col}" stroke-width="1.6" opacity="${on?.8:.15}"/>`;
+      s+=`<line x1="${mx}" y1="${my}" x2="${hx}" y2="${hy}" stroke="${col}" stroke-width="1.6" opacity="${on?.8:.15}"/>`;
+      s+=`<circle cx="${mx}" cy="${my}" r="15" fill="${on?col:'#0a1d42'}" stroke="${col}" stroke-width="2"/><text x="${mx}" y="${my+4}" text-anchor="middle" font-size="10" font-weight="700" fill="${on?'#03122b':col}">${esc(m.code||'')}</text>`});
+    s+=`<path d="M${hx} ${hy}C${hx+60} ${hy},${sx-60} ${sy},${sx} ${sy}" fill="none" stroke="${col}" stroke-width="2.5" opacity="${e.catsDone.includes(c.id)?.9:.15}"/><circle cx="${hx}" cy="${hy}" r="18" fill="${col}"/><text x="${hx}" y="${hy+5}" text-anchor="middle" font-family="Sora, Inter, system-ui, sans-serif" font-weight="800" font-size="15" fill="#03122b">${esc(c.code)}</text>`});
+  return`<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Your group connected to all Site Missions and the Site Mission 2027 destination">${s}
+  <circle cx="${gx}" cy="${gy}" r="26" fill="#33e6f2"/><g transform="translate(${gx-12} ${gy-12})" stroke="#03122b" fill="none" stroke-width="2"><path d="${ICONS.ship}"/></g>
+  <circle cx="${sx}" cy="${sy}" r="30" fill="#fff" style="filter:drop-shadow(0 0 14px #9ff6ff)"/><text x="${sx}" y="${sy-2}" text-anchor="middle" font-size="10" font-weight="800" fill="#03122b">SITE</text><text x="${sx}" y="${sy+11}" text-anchor="middle" font-size="10" font-weight="800" fill="#03122b">2027</text></svg>`;
+}
+
+/* ---- screens ---- */
+const SC={
+welcome(){
+  const L=lv();
+  return`<div class="wrap hero"><div class="stack"><p class="tag">${icon('compass',16)}Site Mission 2027</p><h1>SAIL WITH<span>PURPOSE</span></h1><p class="motto">Ready, Rise, Win</p>
+  <p class="lead">A group voyage to activate Site Mission 2027. Play together on one device, complete all four destinations, and help launch the ship.</p>
+  ${P.g?`<div class="row"><button class="btn primary" data-act="cont">Continue the journey ${icon('arrow',20)}</button><span class="muted">Playing as <b style="color:var(--ink)">${esc(gname())}</b></span></div>`:`<div class="row">${L.registrationOpen?`<button class="btn primary" data-act="go" data-arg="register">Register your group ${icon('arrow',20)}</button>`:`<span class="tag">${icon('lock',16)}Registration is closed</span>`}
+  <button class="link" data-act="go" data-arg="resume">Already registered? Continue your journey</button></div>`}
+  ${S.mode==='local'?`<p class="tiny">Rehearsal mode: progress is stored in this browser only.</p>`:''}${S.mode==='live'&&S.canWrite===false?`<p class="err">${icon('alert',16)}This device has view-only access to the event, so it cannot save progress. Ask a facilitator for access.</p>`:''}</div>
+  <div class="scene">${heroScene()}</div></div>`;
+},
+register(){
+  const L=lv(),f=P.form;
+  if(!L.registrationOpen)return`<div class="card narrow stack" style="padding:32px;text-align:center">${icon('lock',40)}<h2>Registration is closed</h2><p class="muted">Please speak to a facilitator if your group still needs to join.</p><button class="btn" data-act="go" data-arg="welcome">Back</button></div>`;
+  return`<form id="regform" class="card narrow stack wrap" style="padding:clamp(22px,3vw,36px)" novalidate>
+  <h2>Register your group</h2><p class="muted">One registration per group, on one shared device.</p>
+  <div class="field"><label for="f-name">Group name <span aria-hidden="true">*</span></label><input class="input" id="f-name" name="name" maxlength="40" required autocomplete="off" value="${esc(f.name)}" aria-describedby="nameerr"><div id="nameerr" aria-live="polite">${P.err?`<p class="err">${icon('alert',16)}${esc(P.err)}</p>`:''}</div></div>
+  <div class="row"><button class="btn primary" type="submit">Register group</button><button class="btn ghost" type="button" data-act="go" data-arg="welcome">Back</button></div></form>`;
+},
+resume(){return`<form id="resform" class="card narrow stack wrap" style="padding:clamp(22px,3vw,36px)" novalidate><h2>Continue your journey</h2><p class="muted">Use this if your device was replaced or the page was reset. Enter the group name you registered with, and you will pick up exactly where you left off.</p>
+  <div class="field"><label for="f-gid">Registered group name</label><input class="input" id="f-gid" name="gid" maxlength="40" autocomplete="off" aria-describedby="giderr"><div id="giderr" aria-live="polite">${P.err?`<p class="err">${icon('alert',16)}${esc(P.err)}</p>`:''}</div></div>
+  <div class="row"><button class="btn primary" type="submit">Continue the journey</button><button class="btn ghost" type="button" data-act="go" data-arg="welcome">Back</button></div><p class="tiny">Can't remember the exact name? A facilitator can look it up.</p></form>`},
+aboard(){return`<div class="card narrow stack wrap" style="padding:clamp(24px,3.4vw,44px);text-align:center"><div style="color:var(--cyan)">${icon('ship',64)}</div>
+  <h1>Welcome aboard, ${esc(gname())}.</h1><p class="lead" style="margin-inline:auto">Your mission is to activate Site Mission 2027.</p>
+  <p class="muted">If this device changes, just choose “Continue your journey” and enter your group name.</p>
+  <p><button class="btn primary" data-act="go" data-arg="instructions">Start the Journey ${icon('arrow',20)}</button></p></div>`},
+instructions(){
+  const st=[['map','Choose a destination','Pick any of the four categories on the map: E, P, I or C.'],['lock','Finish what you start','Complete all three Site Missions in a category before you can sail to the next one.'],['book','Read, discuss, decide','Read each mission brief together, then agree on one answer as a group.'],['refresh','Wrong is fine','A wrong answer never costs progress. Try again or reread the brief.']];
+  return`<div class="wrap stack"><h1>How the voyage works</h1><p class="lead">About 10 minutes per category, around 45 minutes in total. Every mission you activate adds sails and light to your ship.</p>
+  <div class="steps">${st.map(([i,t,d],n)=>`<div class="card step">${icon(i,30)}<b>${n+1}. ${t}</b><p class="muted">${d}</p></div>`).join('')}</div>
+  <div class="row"><button class="btn primary" data-act="go" data-arg="map">Open the journey map ${icon('arrow',20)}</button><span class="tiny">Progress saves automatically after every answer.</span></div></div>`;
+},
+map(){
+  const g=P.g,e=evalGroup(g),cats=CT.cats(),lg=ev().logic;
+  const cur=lg.categoryLocking&&g.currentCategory&&!e.catsDone.includes(g.currentCategory)?g.currentCategory:null;
+  const curCat=cur?CT.cat(cur):null;const areas=['e','p','i','c'];
+  const cards=cats.map((c,i)=>{const col=safeColor(c.color),ms=CT.missions(c.id),n=ms.filter(m=>e.done.includes(m.id)).length;
+    const state=e.catsDone.includes(c.id)?'done':cur===c.id?'current':cur?'locked':(g.currentCategory===c.id?'current':'open');
+    const st={done:`${icon('check',18)}<span style="color:var(--green)">Activated</span>`,current:`${icon('compass',18)}<span style="color:var(--cyan)">In progress · ${n} of ${ms.length}</span>`,locked:`${icon('lock',18)}<span>Locked until ${esc(curCat?.code||'')} is complete</span>`,open:`${icon('arrow',18)}<span>Available · ${ms.length} missions</span>`}[state];
+    return`<button class="dest ${state}" style="grid-area:${areas[i]}" data-act="cat" data-arg="${esc(c.id)}" aria-label="${esc(c.code)}: ${esc(c.name)}. ${state==='locked'?'Locked':state}"><span class="code" style="background:${col}">${esc(c.code)}</span><h3>${esc(c.name)}</h3><span class="st">${st}</span></button>`}).join('');
+  return`<div class="wrap stack"><div class="row" style="justify-content:space-between"><div><h2>Journey map</h2><p class="muted">${cur?`Finish ${esc(curCat?.code)} to unlock the other destinations.`:e.catsDone.length?'Choose your next destination.':'Choose your first destination.'}</p></div>${S.content?.placeholder?`<span class="tag ph">Placeholder content</span>`:''}</div>
+  <div class="map"><svg class="routes" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><g stroke="#33e6f2" stroke-opacity=".35" stroke-width=".35" stroke-dasharray="1.2 1.4" fill="none" vector-effect="non-scaling-stroke"><path d="M50 50Q30 40 18 22"/><path d="M50 50Q70 40 82 22"/><path d="M50 50Q30 60 18 78"/><path d="M50 50Q70 60 82 78"/></g></svg>
+  ${cards}<div class="shipbox">${shipWidget(g)}<p class="big">${e.done.length} of ${e.total}</p><p class="muted">Site Missions activated</p>${e.complete?`<button class="btn primary" data-act="go" data-arg="allDone">Your ship is ready ${icon('arrow',20)}</button>`:''}</div></div>
+  <p class="tiny" id="lockmsg" aria-live="polite"></p></div>`;
+},
+category(){
+  const g=P.g,cid=P.ui.viewCat||g.currentCategory,c=CT.cat(cid);if(!c){P.screen='map';return SC.map()}
+  const e=evalGroup(g),col=safeColor(c.color),ms=CT.missions(c.id);
+  return`<div class="wrap stack"><div class="crumb"><button class="link" data-act="go" data-arg="map">${icon('back',16)} Journey map</button><span>/</span><span>Category ${esc(c.code)}</span></div>
+  <div class="row" style="gap:18px"><span class="code" style="width:64px;height:64px;border-radius:50%;display:grid;place-items:center;background:${col};color:#03122b;font-family:var(--disp);font-weight:800;font-size:28px">${esc(c.code)}</span><div style="flex:1"><h1>${esc(c.name)}</h1><p class="muted" style="max-width:70ch;margin-top:6px">${esc(c.description)}</p></div></div>
+  <div class="mgrid">${ms.map(m=>{const qs=CT.qs(m.id),n=qs.filter(q=>CT.ok(q,g.solved?.[q.id])).length,dn=e.done.includes(m.id);
+    return`<button class="mcard ${dn?'done':''}" data-act="mission" data-arg="${esc(m.id)}"><span class="mi" style="color:${safeColor(m.color||c.color)}">${icon(m.icon,28)}</span><span class="tiny">${esc(m.code||'')} · Site Mission</span><h3>${esc(m.title)}</h3><span class="pdots" aria-hidden="true">${qs.map((q,i)=>`<i class="${i<n?'on':''}"></i>`).join('')}</span><span class="st" style="display:flex;gap:7px;align-items:center;font-weight:600;font-size:14px">${dn?`${icon('check',18)}<span style="color:var(--green)">Activated</span>`:n?`${icon('compass',18)}<span>${n} of ${qs.length} questions completed</span>`:`${icon('book',18)}<span>Read the brief to begin</span>`}</span></button>`}).join('')}</div></div>`;
+},
+brief(){
+  const m=CT.mission(P.ui.mid);if(!m){P.screen='category';return SC.category()}
+  const c=CT.cat(m.categoryId),col=safeColor(m.color||c?.color),done=evalGroup(P.g).done.includes(m.id);
+  const beh=String(m.behavior||'').split(/\n+/).map(s=>s.trim()).filter(Boolean);
+  const fromQ=P.ui.fromQ;
+  return`<div class="wrap stack"><div class="crumb"><button class="link" data-act="go" data-arg="category">${icon('back',16)} Category ${esc(c?.code||'')}</button><span>/</span><span>Mission brief</span><span class="tag">${icon('clock',14)}About ${esc(m.readMins||1)} min read</span>${S.content?.placeholder?`<span class="tag ph">Placeholder content</span>`:''}</div>
+  <div class="brief"><div class="card stack"><div class="row"><span style="color:${col}">${icon(m.icon,40)}</span><div><p class="kicker" style="color:${col}">${esc(m.code||'')} · Site Mission</p><h1 style="font-size:clamp(26px,3vw,40px)">${esc(m.title)}</h1></div></div>
+  <p class="purpose">${esc(m.purpose)}</p><p class="muted" style="font-size:17px">${esc(m.summary)}</p>
+  <div><p class="kicker">Why it matters</p><p>${esc(m.why)}</p></div></div>
+  <div class="card stack"><div><p class="kicker">What we expect from each other</p><ul class="blist">${beh.map(b=>`<li>${icon('check',18)}<span>${esc(b)}</span></li>`).join('')}</ul></div>
+  ${m.example?`<div><p class="kicker">Practical example</p><p class="muted">${esc(m.example)}</p></div>`:''}
+  <div class="row" style="margin-top:auto">${done?`<span class="tag" style="color:var(--green)">${icon('check',16)}Mission activated</span><button class="btn" data-act="go" data-arg="category">Back to missions</button>`:`<button class="btn primary" data-act="startq">${fromQ?'Return to the question':'Start Mission Questions'} ${icon('arrow',20)}</button>`}</div></div></div></div>`;
+},
+question(){
+  const g=P.g,m=CT.mission(P.ui.mid||g.currentMission);if(!m){P.screen='category';return SC.category()}
+  P.ui.mid=m.id;const qs=CT.qs(m.id),lg=ev().logic;
+  const idx=qs.findIndex(q=>!CT.ok(q,g.solved?.[q.id]));
+  if(P.ui.fb==='right'&&P.ui.q){/* show feedback for the just-solved question */}
+  else if(idx<0){P.screen='missionDone';return SC.missionDone()}
+  const q=P.ui.fb==='right'?qs.find(x=>x.id===P.ui.q):qs[idx];const qi=qs.indexOf(q);
+  const att=g.attempts?.[q.id]||0;
+  const doShuffle=lg.shuffleAnswers&&q.shuffle!==false;
+  const opts=doShuffle?shuffle(q.options||[],g.groupId+q.id+(lg.shuffleOnRetry?att:0)):(q.options||[]);
+  const col=safeColor(m.color);
+  let foot;
+  if(P.ui.fb==='wrong'){const showHint=q.hint&&att>=(+lg.hintThreshold||2),stuck=+lg.maxAttempts>0&&att>=+lg.maxAttempts;
+    foot=`<div class="fb wrong" role="status"><h3>${icon('compass',26)}Not quite yet.</h3><p>Revisit the mission or try a different perspective.</p>${showHint?`<p class="hint"><b>Hint:</b> ${esc(q.hint)}</p>`:''}${stuck?`<p class="row">${icon('hand',20)}<span>Need a hand? Raise your hand and a facilitator will come over.</span></p>`:''}<div class="row"><button class="btn primary" data-act="retry">Try again</button><button class="btn" data-act="review">${icon('book',18)}Review Mission Brief</button></div></div>`}
+  else if(P.ui.fb==='right'){const last=qs.every(x=>CT.ok(x,g.solved?.[x.id]));
+    foot=`<div class="fb right" role="status"><h3>${icon('check',28)}Correct.</h3><p style="font-size:18px">Your decision supports <b>${esc(m.title)}</b>${q.explanation?` by ${esc(q.explanation)}`:'.'}</p><div class="row"><button class="btn primary" data-act="nextq">${last?'Activate the mission':'Next question'} ${icon('arrow',20)}</button></div></div>`}
+  else foot=`<div class="row"><button class="btn primary" data-act="submit" ${P.ui.sel?'':'disabled'}>Lock in our answer</button><button class="btn ghost" data-act="review">${icon('book',18)}Review Mission Brief</button></div>`;
+  const locked=!!P.ui.fb;
+  return`<div class="wrap qwrap"><div class="qhead"><div class="crumb"><span style="color:${col}">${icon(m.icon,20)}</span><b style="color:var(--ink)">${esc(m.title)}</b></div><div class="row"><span class="tag">Question ${qi+1} of ${qs.length}</span><span class="pdots" aria-hidden="true">${qs.map(x=>`<i class="${CT.ok(x,g.solved?.[x.id])?'on':''}"></i>`).join('')}</span></div></div>
+  <p class="qtext" id="qt">${esc(q.text)}</p>
+  <div class="opts" role="radiogroup" aria-labelledby="qt">${opts.map((o,i)=>`<button class="opt" role="radio" aria-checked="${P.ui.sel===o.id}" data-act="sel" data-arg="${esc(o.id)}" ${locked?'disabled':''}><span class="k">${'ABCD'[i]}</span><span>${esc(o.text)}</span></button>`).join('')}</div>${foot}</div>`;
+},
+missionDone(){
+  const g=P.g,e=evalGroup(g),m=CT.mission(P.ui.mid),c=CT.cat(m?.categoryId),catDone=c&&e.catsDone.includes(c.id);
+  return`<div class="celebrate wrap narrow"><div class="burst">${icon('check',72)}</div><p class="kicker">Site Mission activated</p><h1>${esc(m?.title||'')}</h1>
+  <p class="big">${e.done.length} of ${e.total} missions activated</p><div style="width:min(320px,80vw)">${shipWidget(g,320)}</div>
+  ${catDone?`<button class="btn primary" data-act="go" data-arg="catDone">Continue ${icon('arrow',20)}</button>`:`<button class="btn primary" data-act="go" data-arg="category">Back to the missions ${icon('arrow',20)}</button>`}</div>`;
+},
+catDone(){
+  const g=P.g,e=evalGroup(g),m=CT.mission(P.ui.mid),c=CT.cat(m?.categoryId)||CT.cat(e.catsDone[e.catsDone.length-1]);const col=safeColor(c?.color);
+  return`<div class="celebrate wrap narrow"><svg class="sailbadge" viewBox="0 0 120 120" width="140" aria-hidden="true"><circle cx="60" cy="60" r="56" fill="none" stroke="${col}" stroke-width="3" opacity=".5"/><path d="M60 18V96M58 22Q30 55 28 90H58ZM62 26L94 90H62Z" fill="${col}" stroke="${col}" stroke-width="2"/></svg>
+  <h1>${esc(c?.name||'Category')} activated.</h1><p class="lead">Choose your next destination.</p><p class="muted">${e.catsDone.length} of ${CT.cats().length} categories complete · ${e.done.length} of ${e.total} missions</p>
+  ${e.complete?`<button class="btn primary" data-act="go" data-arg="allDone">See your ship ${icon('arrow',20)}</button>`:`<button class="btn primary" data-act="go" data-arg="map">Open the journey map ${icon('arrow',20)}</button>`}</div>`;
+},
+allDone(){
+  const g=P.g;
+  return`<div class="wrap stack" style="text-align:center"><p class="kicker">All four destinations complete</p><h1>Your ship is ready to sail.</h1>
+  <p class="lead" style="margin-inline:auto">Every mission your group activated is now part of one connected Site Mission 2027 network. Watch the main screen: the ship launches when every group is ready.</p>
+  <div class="card" style="padding:16px;max-width:820px;margin-inline:auto">${miniNetwork(g)}</div>
+  <div style="max-width:340px;margin-inline:auto">${shipWidget(g,340)}</div></div>`;
+},
+removed(){return`<div class="card narrow stack" style="padding:32px;text-align:center">${icon('anchor',40)}<h2>This registration was closed</h2><p class="muted">A facilitator removed this group registration, often because the same group registered twice. Please check with the facilitator, then register again or continue with your group name.</p><div class="row" style="justify-content:center"><button class="btn primary" data-act="go" data-arg="welcome">Back to start</button></div></div>`}
+};
+
+/* ---- player actions ---- */
+const ACT={
+  go(a){if(a==='category'&&!P.g?.currentCategory&&!P.ui.viewCat)a='map';P.screen=a;P.err='';if(a!=='question')P.ui.fb=null;renderPlay()},
+  async register(){
+    const name=String(P.form.name||'').trim().replace(/\s+/g,' ');
+    const setErr=m=>{P.err=m;const el=$('#nameerr');if(el)el.innerHTML=m?`<p class="err">${icon('alert',16)}${esc(m)}</p>`:'';$('#f-name')?.focus()};
+    if(name.length<2)return setErr('Please enter a group name (at least 2 characters).');
+    if(!lv().registrationOpen)return setErr('Registration is closed.');
+    const key=nameKey(name);
+    try{const taken=await Store.get('names/'+key);if(taken&&taken.groupId)return setErr(`"${name}" is already registered. Choose another name, or go back and use “Continue your journey” if this is your group.`)}catch(e){}
+    try{const all=await Store.list('names');if(all.length>=(+ev().maxGroups||80))return setErr('The event has reached its maximum number of groups. Please speak to a facilitator.')}catch(e){}
+    modal({title:'Confirm your group name',body:`<p>You are registering as</p><p class="big">${esc(name)}</p><p class="muted">Everyone at your table will play on this device under this name.</p>`,
+      actions:[{label:'Change name',cls:'ghost'},{label:'Confirm and register',cls:'primary',fn:async()=>{
+        const id=key;
+        let ok=false;try{ok=await Store.claim('names/'+key,{groupId:id,name,at:now()})}catch(e){setErr(e&&e.code==='invalid_argument'?'This device does not have permission to join the event. Please ask a facilitator.':'Could not register right now. Please check the connection and try again.');return}
+        if(!ok){setErr(`"${name}" was just registered by another group. Please choose another name.`);return}
+        const g={groupId:id,groupName:name,registeredAt:now(),currentCategory:null,currentMission:null,completedCategories:[],completedMissions:[],overallProgress:0,solved:{},attempts:{},briefOpened:{},log:[],status:'registered',lastActivity:now(),include:!lv().denominatorLocked,lateRegistration:!!lv().denominatorLocked,resetEpoch:0,rev:1};
+        try{await Store.set('groups/'+id,g)}catch(e){Store.del('names/'+key).catch(()=>{});setErr(e&&e.code==='invalid_argument'?'This device does not have permission to join the event. Please ask a facilitator.':'Could not register right now. Please try again.');return}
+        P.ctrl=null;attachGroup(g);P.lastSaved=now();P.screen='aboard';renderPlay();
+      }}]});
+  },
+  async doResume(){
+    const nm=String($('#f-gid')?.value||'').trim().replace(/\s+/g,' ');const er=m=>{P.err=m;$('#giderr').innerHTML=`<p class="err">${icon('alert',16)}${esc(m)}</p>`};
+    if(nm.length<2)return er('Enter the group name you registered with.');
+    let g=null,c=null;try{const n=await Store.get('names/'+nameKey(nm));const id=(n&&n.groupId)||nameKey(nm);g=await Store.get('groups/'+id);c=await Store.get('ctrl/'+id)}catch(e){}
+    if(!g||(c&&c.removed))return er(`No group named "${nm}" is registered. Check the spelling or ask a facilitator.`);
+    P.ctrl=c;P.err='';attachGroup(g);P.screen=resumeScreen();toast(`Welcome back, ${gname()}.`);renderPlay();
+  },
+  cat(cid){
+    const g=P.g,e=evalGroup(g),lg=ev().logic,c=CT.cat(cid);
+    const cur=lg.categoryLocking&&g.currentCategory&&!e.catsDone.includes(g.currentCategory)?g.currentCategory:null;
+    if(e.catsDone.includes(cid)){P.ui.viewCat=cid;P.screen='category';return renderPlay()}
+    if(cur&&cur!==cid){const cc=CT.cat(cur);const m=`${c.code} is locked. Your group chose ${cc.code}, so complete all three of its Site Missions first. Then every remaining destination unlocks.`;const el=$('#lockmsg');if(el)el.textContent=m;toast(m);return}
+    if(g.currentCategory===cid){P.ui.viewCat=null;P.screen='category';return renderPlay()}
+    modal({title:`Set sail for ${c.code}?`,body:`<p class="big">${esc(c.name)}</p><p class="muted">${lg.categoryLocking?'Your group will complete all three Site Missions here before choosing another destination.':'You can switch destinations at any time.'}</p>`,
+      actions:[{label:'Not yet',cls:'ghost'},{label:`Sail to ${c.code}`,cls:'primary',fn:()=>{commit(x=>{x.currentCategory=cid});P.ui.viewCat=null;P.screen='category';renderPlay()}}]});
+  },
+  mission(mid){P.ui={mid,viewCat:P.ui.viewCat};const g=P.g;if(!g.briefOpened?.[mid]||g.currentMission!==mid)commit(x=>{x.briefOpened[mid]=true;x.currentMission=mid});P.screen='brief';renderPlay()},
+  startq(){P.ui.fromQ=false;P.screen='question';renderPlay()},
+  review(){P.ui.fromQ=true;P.ui.fb=null;P.ui.sel=null;P.screen='brief';renderPlay()},
+  sel(id){if(P.ui.fb)return;P.ui.sel=id;$$('.opt').forEach(b=>b.setAttribute('aria-checked',String(b.dataset.arg===id)));const s=$('[data-act=submit]');if(s)s.disabled=false},
+  submit(){
+    const m=CT.mission(P.ui.mid),qs=CT.qs(m.id),q=qs.find(x=>!CT.ok(x,P.g.solved?.[x.id]));if(!q||!P.ui.sel)return;
+    const opt=P.ui.sel,ok=CT.ok(q,opt);
+    commit(g=>{const n=(g.attempts[q.id]||0)+1;g.attempts[q.id]=n;g.log.push({q:q.id,o:opt,c:ok,n,t:now()});if(g.log.length>240)g.log=g.log.slice(-240);if(ok)g.solved[q.id]=opt;g.currentMission=m.id});
+    P.ui.fb=ok?'right':'wrong';P.ui.q=q.id;renderPlay();
+  },
+  retry(){P.ui.fb=null;P.ui.sel=null;renderPlay()},
+  nextq(){P.ui.fb=null;P.ui.sel=null;P.ui.q=null;const m=CT.mission(P.ui.mid);const left=CT.qs(m.id).some(x=>!CT.ok(x,P.g.solved?.[x.id]));P.screen=left?'question':'missionDone';renderPlay()},
+  home(){goHome()},
+  cont(){P.screen=resumeScreen();renderPlay()},
+  amenu(){adminMenu()},
+  logout(){logout()},
+  menu(){modal({title:gname(),body:`<p class="muted">If this device changes, choose “Continue your journey” on the start screen and enter your group name to pick up where you left off.</p>
+    <label class="sw"><input type="checkbox" id="rmchk" ${reduced?'checked':''}> Reduce motion</label>`,
+    actions:[{label:'Leave this device',cls:'warn',fn:()=>{modal({title:'Leave this device?',body:'<p>Your progress stays saved. To continue later, enter your group name on the start screen.</p>',actions:[{label:'Stay',cls:'ghost'},{label:'Leave device',cls:'warn',fn:()=>{P.unsubG?.();P.unsubC?.();LS.del(DEVICE);P.g=null;P.ctrl=null;P.ui={};P.screen='welcome';renderPlay()}}]});return false}},{label:'Done',cls:'primary',fn:()=>{reduced=$('#rmchk').checked;LS.set('smg:reduced',reduced);document.documentElement.classList.toggle('rm',reduced)}}]})}
+};
+document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(!b||b.disabled||!$('#app').contains(b))return;const f=ACT[b.dataset.act]||ADM[b.dataset.act];if(f){e.preventDefault();f(b.dataset.arg,b)}});
+/* keep the browser back button from breaking the game */
+function trapBack(){try{history.pushState({smg:1},'',location.href)}catch(e){}}
+addEventListener('popstate',()=>{if(view()==='play'&&P.g){trapBack();toast('Use the buttons on screen to move around the game.')}});
+
+/* ======================================================================
+   DASHBOARD
+   ====================================================================== */
+const D={tab:null,rot:null,prevEdges:new Set(),lastDraw:0,pending:false,ro:null,finalSeen:null};
+function watchGroups(){
+  if(S._gw)return;S._gw=true;
+  const u1=Store.watchAll('groups',docs=>{S.groupsRaw=docs;S.groupsOk=true;S.lastUpdate=now();onGroups()},()=>{S.groupsOk=false});
+  const u2=Store.watchAll('ctrl',docs=>{S.ctrl=Object.fromEntries(docs.map(d=>[d._id,d]));onGroups()});
+  teardown.push(()=>{u1();u2();S._gw=false});
+}
+function onGroups(){const v=view();if(v==='dashboard')schedDash();else if(v==='facilitator')schedFac()}
+function schedDash(){if(D.pending)return;D.pending=true;const wait=Math.max(0,700-(now()-D.lastDraw));setTimeout(()=>{D.pending=false;D.lastDraw=now();drawDash()},wait)}
+function renderDash(){
+  watchGroups();const d=ev().dashboard;D.tab=D.tab||d.view||'groups';
+  $('#app').innerHTML=`<div class="dash" id="dash"><div class="dhead"><button class="brand" data-act="home" aria-label="Home" style="font-size:18px;background:none;border:0;cursor:pointer;min-height:44px">${icon('ship',28)}<span>Sail with Purpose</span></button><h1 style="flex:1">Site Mission 2027 · Live voyage</h1>
+  <div class="tabs" role="tablist">${[['groups','Groups'],['missions','Missions'],['network','Network']].map(([k,l])=>`<button role="tab" aria-selected="${D.tab===k}" data-dt="${k}">${l}</button>`).join('')}</div>
+  <button class="btn small ghost" id="dfs">${icon('expand',18)}Full screen</button>${AUTH.ok()?`<button class="btn small ghost" data-act="amenu">${icon('menu',18)}Admin menu</button>`:`<button class="btn small ghost" data-act="home">${icon('home',18)}Home</button>`}<span class="chip" id="dst"></span></div>
+  <div class="stats" id="dstats"></div><div class="dbody" id="dbody"></div></div>`;
+  $$('[data-dt]').forEach(b=>b.onclick=()=>{D.tab=b.dataset.dt;$$('[data-dt]').forEach(x=>x.setAttribute('aria-selected',String(x===b)));drawDash()});
+  $('#dfs').onclick=()=>{const el=document.documentElement;(document.fullscreenElement?document.exitFullscreen():el.requestFullscreen?.())?.catch?.(()=>toast('Full screen is not available here.'))};
+  clearInterval(D.rot);const rs=+d.rotateSec||0;
+  if(rs>0){D.rot=setInterval(()=>{const t=['groups','missions','network'];D.tab=t[(t.indexOf(D.tab)+1)%3];$$('[data-dt]').forEach(x=>x.setAttribute('aria-selected',String(x.dataset.dt===D.tab)));drawDash()},rs*1000);teardown.push(()=>clearInterval(D.rot))}
+  const tick=setInterval(()=>{const st=$('#dst');if(st)st.innerHTML=dashChip()},Math.max(2,+d.refreshSec||5)*1000);teardown.push(()=>clearInterval(tick));
+  if(D.ro)D.ro.disconnect();D.ro=new ResizeObserver(()=>{if(D.tab==='network')drawDash()});D.ro.observe($('#dbody'));teardown.push(()=>D.ro.disconnect());
+  drawDash();
+}
+const dashChip=()=>S.mode==='local'?`<span class="dot off"></span>Rehearsal mode`:S.groupsOk?`<span class="dot"></span>Live · updated ${fmtTime(S.lastUpdate)}`:`<span class="dot warn"></span>Reconnecting…`;
+function shortT(t,n){t=String(t||'').replace(/\s*\(placeholder\)/i,'');if(t.length<=n)return t;const i=t.lastIndexOf(' ',n);return t.slice(0,i>8?i:n)+'…'}
+function label(g){return g.name}
+function drawDash(){
+  if(view()!=='dashboard'||!$('#dbody'))return;
+  const A=aggregate(),showPct=ev().dashboard.showPercent;
+  $('#dst').innerHTML=dashChip();
+  $('#dstats').innerHTML=[[A.N,'groups sailing'],[A.inProg,'in progress'],[A.completed,'ships ready'],[`${A.fullCount}/${A.mstat.length||12}`,'missions fully activated'],...(showPct?[[A.overall+'%','overall voyage']]:[])].map(([b,s])=>`<div class="stat"><b>${esc(b)}</b><span>${s}</span></div>`).join('')+(A.ready?`<div class="ready">${icon('sparkle',20)}Every ship is ready · awaiting launch</div>`:'');
+  const body=$('#dbody');
+  if(!CT.all().length){body.innerHTML=`<div class="empty">${icon('book',36)}<p>Mission content has not been published yet.</p></div>`;return}
+  if(!A.gs.length){body.innerHTML=`<div class="empty">${icon('anchor',40)}<h2>Waiting for the first ships</h2><p>Groups appear here as soon as they register.</p></div>`;return}
+  if(D.tab==='groups')body.innerHTML=dashGroups(A,showPct);
+  else if(D.tab==='missions')body.innerHTML=dashMissions(A,showPct);
+  else drawNetwork(body,A);
+}
+function dashGroups(A,showPct){
+  const cats=CT.cats();
+  const leg=`<div class="legend"><span><i style="background:#3a4866"></i>Registered</span><span><i style="background:var(--blue)"></i>In progress</span><span><i style="background:var(--green)"></i>All 12 complete</span><span><i style="background:transparent;box-shadow:0 0 0 2px var(--amber)"></i>Idle ${esc(ev().logic.timeoutMin)}+ min</span></div>`;
+  return`<div class="ggrid" style="padding-bottom:60px">${A.gs.map(g=>{const e=g.ev,st=e.status;const mk=st==='completed'?icon('check',22):st==='in_progress'?icon('ship',20):icon('anchor',20);
+    const cur=g.currentCategory?CT.cat(g.currentCategory):null;
+    const sub=st==='completed'?(e.exc?'Complete · exception':'Ready to sail'):st==='in_progress'?`${e.done.length}/${e.total}${showPct?` · ${e.pct}%`:''}${cur?` · at ${esc(cur.code)}`:''}`:'Not started';
+    return`<div class="gt s-${st} ${e.idle?'idle':''}" title="${esc(g.name)}: ${e.done.length} of ${e.total} missions${g.include===false?' (not counted)':''}"><span class="mk">${mk}</span><b>${esc(label(g))}${g.include===false?' <span class="tiny">·late</span>':''}</b><span class="sub">${e.idle?`<span style="color:var(--amber)">Idle · </span>`:''}${sub}</span>
+    <span class="pips">${cats.map(c=>{const col=safeColor(c.color),dn=e.catsDone.includes(c.id),isCur=g.currentCategory===c.id;return`<i style="${dn?`background:${col};color:#03122b;border-color:${col}`:isCur?`border-color:${col};color:${col}`:''}" aria-label="${esc(c.code)} ${dn?'complete':isCur?'current':'not complete'}">${esc(c.code)}${dn?'✓':''}</i>`}).join('')}</span></div>`}).join('')}</div>${leg}`;
+}
+function ring(p,col,full){const r=27,C=2*Math.PI*r;return`<svg class="ring" viewBox="0 0 66 66" aria-hidden="true"><circle cx="33" cy="33" r="${r}" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="7"/><circle cx="33" cy="33" r="${r}" fill="none" stroke="${p?col:'transparent'}" stroke-width="7" stroke-linecap="round" stroke-dasharray="${(C*p/100).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 33 33)" ${full?`style="filter:drop-shadow(0 0 6px ${col})"`:''} opacity="${full?1:.75}"/><text x="33" y="38" text-anchor="middle" font-family="Sora, Inter, system-ui, sans-serif" font-weight="700" font-size="15" fill="${full?col:'#f3f7ff'}">${p}%</text></svg>`}
+function dashMissions(A,showPct){
+  return`<div class="mcols">${CT.cats().map(c=>{const col=safeColor(c.color);return`<div class="mcol"><h3><span class="code" style="background:${col}">${esc(c.code)}</span>${esc(c.name)}</h3>${CT.missions(c.id).map(m=>{const x=A.mstat.find(s=>s.m.id===m.id)||{n:0,N:A.N,pct:0,full:false};const lab=x.full?'Fully activated':x.n?'Charging':'Dormant';const mc=safeColor(m.color||c.color);
+    return`<div class="mt ${x.full?'full':''}" style="--c:${mc}">${ring(x.pct,x.n?mc:'#55657f',x.full)}<div><b>${esc(m.code||'')} · ${esc(m.title)}</b><p class="sub">${x.n} of ${x.N} groups${showPct?` · ${x.pct}%`:''}</p><p class="sub" style="display:flex;gap:6px;align-items:center;color:${x.full?mc:'var(--soft)'}">${x.full?icon('sparkle',14):x.n?icon('compass',14):icon('anchor',14)}${lab}</p></div></div>`}).join('')}</div>`}).join('')}</div>`;
+}
+function drawNetwork(body,A){
+  let svg=$('#netsvg',body);
+  if(!svg){body.innerHTML=`<svg class="net" id="netsvg" role="img" aria-label="Network of groups, Site Missions, categories and the Site Mission 2027 destination"></svg><div class="legend" id="netleg"></div>`;svg=$('#netsvg',body)}
+  const W=body.clientWidth||1000,H=body.clientHeight||600,cx=W/2,cy=H/2,mn=Math.min(W,H);
+  const cats=CT.cats(),angs=[-135,-45,45,135].map(a=>a*Math.PI/180);
+  const hubs={},mnodes={};let s='';
+  const defs=`<defs><filter id="ng"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter><radialGradient id="ncore"><stop offset="0" stop-color="#fff"/><stop offset=".6" stop-color="#bff8ff"/><stop offset="1" stop-color="#33e6f2" stop-opacity=".2"/></radialGradient></defs>`;
+  cats.forEach((c,i)=>{const a=angs[i];hubs[c.id]={x:cx+Math.cos(a)*mn*.17,y:cy+Math.sin(a)*mn*.17,col:safeColor(c.color),c};
+    CT.missions(c.id).forEach((m,j,arr)=>{const off=(j-(arr.length-1)/2)*.36;const aa=a+off;mnodes[m.id]={x:cx+Math.cos(aa)*mn*.33,y:cy+Math.sin(aa)*mn*.33,col:safeColor(m.color||c.color),m,a:aa}})});
+  const gs=A.gs,n=gs.length,showNames=n<=40&&mn>500,rx=W/2-(showNames?120:34),ry=H/2-(showNames?40:30);const gpos={};
+  gs.forEach((g,i)=>{const a=-Math.PI/2+i/n*Math.PI*2;gpos[g.groupId]={x:cx+Math.cos(a)*rx,y:cy+Math.sin(a)*ry,a}});
+  const edges=new Set();let eg='';
+  gs.forEach(g=>{const p=gpos[g.groupId];g.ev.done.forEach(mid=>{const m=mnodes[mid];if(!m)return;const k=g.groupId+'>'+mid;edges.add(k);
+    const ha=hubs[m.m.categoryId]?Math.atan2(hubs[m.m.categoryId].y-cy,hubs[m.m.categoryId].x-cx):m.a;const fx=cx+Math.cos(ha)*mn*.5,fy=cy+Math.sin(ha)*mn*.5;const c1x=p.x+(cx-p.x)*.3,c1y=p.y+(cy-p.y)*.3;
+    eg+=`<path class="edge ${D.prevEdges.size&&!D.prevEdges.has(k)?'new':''}" d="M${p.x.toFixed(1)} ${p.y.toFixed(1)}C${c1x.toFixed(1)} ${c1y.toFixed(1)} ${fx.toFixed(1)} ${fy.toFixed(1)} ${m.x.toFixed(1)} ${m.y.toFixed(1)}" stroke="${m.col}"/>`})});
+  D.prevEdges=edges.size?edges:new Set(['_']);
+  let core='';
+  cats.forEach(c=>{const h=hubs[c.id];const allFull=CT.missions(c.id).every(m=>A.mstat.find(x=>x.m.id===m.id)?.full);
+    CT.missions(c.id).forEach(m=>{const mn_=mnodes[m.id],x=A.mstat.find(s=>s.m.id===m.id);core+=`<line x1="${mn_.x}" y1="${mn_.y}" x2="${h.x}" y2="${h.y}" stroke="${h.col}" stroke-width="${x?.full?3:1.5}" opacity="${x?.full?.95:.25}" ${x?.full?'filter="url(#ng)"':'stroke-dasharray="4 6"'}/>`});
+    core+=`<line x1="${h.x}" y1="${h.y}" x2="${cx}" y2="${cy}" stroke="${h.col}" stroke-width="${allFull?4:1.5}" opacity="${allFull?1:.25}" ${allFull?'filter="url(#ng)"':'stroke-dasharray="4 6"'}/>`});
+  let nodes='';
+  Object.values(mnodes).forEach(m=>{const x=A.mstat.find(s=>s.m.id===m.m.id)||{pct:0,full:false};const r=Math.max(14,mn*.028);const out=m.a;const lx=m.x+Math.cos(out)*(r+10),ly=m.y+Math.sin(out)*(r+10);const anc=Math.cos(out)>.2?'start':Math.cos(out)<-.2?'end':'middle';
+    nodes+=`<circle cx="${m.x}" cy="${m.y}" r="${r}" fill="${x.full?m.col:'#0a1d42'}" stroke="${m.col}" stroke-width="2.5" opacity="${x.pct?1:.55}" ${x.full?'filter="url(#ng)"':''}/><circle cx="${m.x}" cy="${m.y}" r="${r}" fill="${m.col}" opacity="${x.full?0:x.pct/160}"/><text x="${m.x}" y="${m.y+4}" text-anchor="middle" class="lbl" style="fill:${x.full?'#03122b':'#f3f7ff'};font-size:11px">${esc(m.m.code||'')}</text>${mn>520?`<text x="${lx}" y="${ly+4}" text-anchor="${anc}" style="font-size:11px">${esc(shortT(m.m.title,24))} · ${x.pct}%</text>`:''}`});
+  cats.forEach(c=>{const h=hubs[c.id];nodes+=`<circle cx="${h.x}" cy="${h.y}" r="${Math.max(18,mn*.035)}" fill="${h.col}"/><text x="${h.x}" y="${h.y+6}" text-anchor="middle" class="lbl" style="fill:#03122b;font-family:var(--disp);font-size:17px">${esc(c.code)}</text>`});
+  const cr=Math.max(30,mn*.06);
+  nodes+=`<circle cx="${cx}" cy="${cy}" r="${cr*(A.ready?1.5:1.25)}" fill="url(#ncore)" opacity="${A.ready?.9:.35}"><animate attributeName="r" values="${cr*1.2};${cr*1.5};${cr*1.2}" dur="4s" repeatCount="indefinite"/></circle><circle cx="${cx}" cy="${cy}" r="${cr}" fill="#081a3a" stroke="#fff" stroke-width="2.5"/><g transform="translate(${cx-14} ${cy-22}) scale(1.15)" stroke="#fff" fill="none" stroke-width="1.8"><path d="${ICONS.ship}"/></g><text x="${cx}" y="${cy+cr+18}" text-anchor="middle" class="lbl" style="font-size:12px;letter-spacing:.06em">SITE MISSION 2027</text>`;
+  gs.forEach(g=>{const p=gpos[g.groupId],e=g.ev;const col=e.complete?'#41f2a5':e.status==='in_progress'?'#4a8dff':'#56627e';const r=n>50?6:8;
+    nodes+=`<g><title>${esc(g.name)}: ${e.done.length}/${e.total}</title><circle cx="${p.x}" cy="${p.y}" r="${e.complete?r+2:r}" fill="${col}" stroke="${e.complete?'#fff':'none'}" stroke-width="1.5" ${e.complete?'filter="url(#ng)"':''}/>${e.complete?`<path d="M${p.x-3.5} ${p.y}l2.5 2.5 5-5" stroke="#03122b" stroke-width="1.8" fill="none"/>`:''}</g>`;
+    if(showNames){const anc=Math.cos(p.a)>.15?'start':Math.cos(p.a)<-.15?'end':'middle';const lx=p.x+Math.cos(p.a)*14,ly=p.y+Math.sin(p.a)*14+4;nodes+=`<text x="${lx}" y="${ly}" text-anchor="${anc}" style="font-size:11px">${esc(label(g).slice(0,16))}</text>`}});
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.classList.toggle('revealed',A.ready);
+  svg.innerHTML=defs+`<g>${eg}</g>${core}${nodes}`;
+  $('#netleg',body).innerHTML=`<span><i style="background:#56627e"></i>Registered</span><span><i style="background:#4a8dff"></i>In progress</span><span><i style="background:#41f2a5"></i>All 12 complete</span><span>Each line = one group activating one mission</span>${A.ready?'<span style="color:var(--green)">Full network revealed</span>':''}`;
+}
+
+/* ======================================================================
+   FACILITATOR
+   ====================================================================== */
+const F={filter:'all',q:'',pending:false};
+function adminNav(cur){return`<header class="bar"><button class="brand" data-act="home" aria-label="Home" style="background:none;border:0;cursor:pointer;min-height:44px">${icon('ship',24)}<span>Sail with Purpose · Admin</span></button><nav class="adminnav" aria-label="Admin pages">${ADMIN_PAGES.map(([h,l,i])=>h==='home'?`<button class="link" style="text-decoration:none;color:var(--soft);font-weight:600;display:inline-flex;gap:6px;align-items:center" data-act="home">${icon(i,16)}${l}</button>`:`<a href="#${h}" ${cur===h?'aria-current="page"':''} style="gap:6px">${icon(i,16)}${l}</a>`).join('')}</nav><div class="grow"></div>${S.mode==='local'?`<span class="tag ph">Rehearsal mode · this browser only</span>`:`<span class="chip"><span class="dot"></span>Live database</span>`}<button class="btn small ghost" data-act="logout">${icon('logout',18)}Log out</button></header>${S.mode==='live'&&!S.admin?`<div class="console" style="padding-bottom:0"><p class="hint">${icon('alert',16)} You are logged in, but your claude.ai account is not an Editor of this page, so changes will not be saved. Ask the page owner to share it with you as <b>Editor</b>.</p></div>`:''}`}
+function schedFac(){if(F.pending)return;F.pending=true;setTimeout(()=>{F.pending=false;if(view()==='facilitator'&&!$('#modal:not([hidden])'))drawFac()},600)}
+function renderFac(){watchGroups();watchKeys();$('#app').innerHTML=adminNav('facilitator')+`<main class="console" id="fac"></main>`;drawFac()}
+function drawFac(){
+  const el=$('#fac');if(!el)return;const A=aggregate(),L=lv(),E=ev();
+  const stLabel={setup:'Not started',live:'Live',paused:'Paused',ended:'Ended'}[L.status]||L.status;
+  const flt=A.gs.filter(g=>(F.filter==='all'||(F.filter==='idle'&&g.ev.idle)||(F.filter==='late'&&g.include===false)||(F.filter==='done'&&g.ev.complete)||(F.filter==='exc'&&g.exception))&&(!F.q||(g.name+' '+(g.groupName||'')).toLowerCase().includes(F.q.toLowerCase())));
+  const idle=A.gs.filter(g=>g.ev.idle).length,demo=A.gs.filter(g=>g.sim).length;
+  el.innerHTML=`
+  <section class="card panel"><div class="row" style="justify-content:space-between"><div><h2 style="margin:0">${esc(E.eventName)}</h2><p class="tiny">Event ID ${esc(E.eventId)}${L.startedAt?` · started ${fmtTime(L.startedAt)}`:''}</p></div><span class="tag" style="font-size:15px">${icon(L.status==='paused'?'pause':L.status==='live'?'play':'anchor',16)}Status: ${esc(stLabel)}</span></div>
+  <div class="row" style="margin-top:14px">
+   ${L.status!=='live'?`<button class="btn primary small" data-act="fStatus" data-arg="${L.status==='paused'?'resume':'live'}">${icon('play',18)}${L.status==='paused'?'Resume event':'Start event'}</button>`:`<button class="btn small" data-act="fStatus" data-arg="paused">${icon('pause',18)}Pause event</button>`}
+   ${L.status!=='ended'?`<button class="btn small ghost" data-act="fStatus" data-arg="ended">End event</button>`:''}
+   ${L.status!=='setup'?`<button class="btn small ghost" data-act="fStatus" data-arg="setup">Back to “not started”</button>`:''}
+   <label class="sw"><input type="checkbox" data-fchk="registrationOpen" ${L.registrationOpen?'checked':''}> Group registration open</label>
+   <label class="sw"><input type="checkbox" data-fchk="denominatorLocked" ${L.denominatorLocked?'checked':''}> Lock final registration count</label></div>
+   <p class="tiny" style="margin-top:6px">When the count is locked, groups registering later are marked “late” and are not counted unless you include them.</p></section>
+  <section class="card panel"><h2>Final activation</h2><div class="kv">
+   <div><b>${A.N}</b><span>groups counted${A.gs.length!==A.N?` (of ${A.gs.length} registered)`:''}</span></div>
+   <div><b>${A.completed}/${A.N}</b><span>groups finished all 12</span></div>
+   <div><b>${A.fullCount}/${A.mstat.length||12}</b><span>missions fully activated</span></div>
+   <div><b style="color:${A.ready?'var(--green)':'var(--soft)'}">${A.ready?'Ready':'Not yet'}</b><span>full network revealed</span></div></div>
+   <div class="row" style="margin-top:14px"><button class="btn primary" data-act="fFinal" ${A.ready&&E.finalAnimationEnabled?'':'disabled'}>${icon('sparkle',20)}Trigger final animation</button>
+   <button class="btn" data-act="fReplay" ${L.finalTrigger?'':'disabled'}>${icon('refresh',18)}Replay on all screens</button>
+   <button class="btn ghost" data-act="fPreview">${icon('play',18)}Preview on this screen only</button></div>
+   <p class="tiny" style="margin-top:6px">${!E.finalAnimationEnabled?'The final animation is switched off in the developer config. ':''}The trigger unlocks only when every counted group has completed all twelve Site Missions (technical exceptions count as complete${E.logic.exceptionsCount?'':' — currently off'}). It plays on the dashboard and on every finished group's device.</p></section>
+  <section class="card panel"><div class="row" style="justify-content:space-between"><h2 style="margin:0">Groups</h2><div class="row">
+   <button class="btn small" data-act="fRecalc">${icon('refresh',16)}Recalculate completion</button><button class="btn small" data-act="fExport">${icon('copy',16)}Export results</button></div></div>
+   <div class="row" style="margin:12px 0"><input class="input" id="fq" placeholder="Search group name" value="${esc(F.q)}" style="max-width:320px;min-height:44px">
+   <div class="tabs">${[['all',`All ${A.gs.length}`],['idle',`Inactive ${idle}`],['late','Late'],['exc','Exceptions'],['done','Finished']].map(([k,l])=>`<button aria-selected="${F.filter===k}" data-act="fFilter" data-arg="${k}">${l}</button>`).join('')}</div></div>
+   ${flt.length?`<div class="scroll"><table class="stack"><thead><tr><th>Group</th><th>Status</th><th>Missions</th><th>Current</th><th>Last active</th><th>Counted</th><th>Actions</th></tr></thead><tbody>${flt.map(g=>{const e=g.ev,cur=g.currentCategory?CT.cat(g.currentCategory)?.code:'—';
+    return`<tr><td><b>${esc(g.name)}</b>${g.sim?' <span class="tag ph">demo</span>':''}</td>
+    <td>${e.complete?`<span style="color:var(--green)">${icon('check',16)} ${e.exc?'Exception':'Complete'}</span>`:e.status==='in_progress'?'In progress':'Not started'}${e.idle?` <span class="tag" style="color:var(--amber)">inactive</span>`:''}${g.exception?`<br><span class="tiny">Exception: ${esc(g.exception.note)}</span>`:''}</td>
+    <td class="num">${e.done.length}/${e.total}</td><td>${esc(cur)}</td><td class="num">${fmtTime(g.lastActivity)}</td>
+    <td><label class="sw"><input type="checkbox" data-finc="${esc(g.groupId)}" ${g.include!==false?'checked':''}> <span class="sr">Count ${esc(g.name)}</span>${g.lateRegistration?'<span class="tiny">late</span>':''}</label></td>
+    <td><div class="row" style="gap:4px"><button class="btn small ghost" data-act="fRename" data-arg="${esc(g.groupId)}" aria-label="Rename ${esc(g.name)}">${icon('edit',16)}</button><button class="btn small ghost" data-act="fExc" data-arg="${esc(g.groupId)}">Exception</button><button class="btn small ghost" data-act="fReset" data-arg="${esc(g.groupId)}">Reset</button><button class="btn small warn" data-act="fRemove" data-arg="${esc(g.groupId)}" aria-label="Remove ${esc(g.name)}">${icon('trash',16)}</button></div></td></tr>`}).join('')}</tbody></table></div>`:`<div class="empty"><p>${A.gs.length?'No groups match this filter.':'No groups have registered yet.'}</p></div>`}</section>
+  <details class="sec" id="demosec" ${F.demoOpen?'open':''}><summary>Rehearsal tools ${demo?`<span class="tag ph">${demo} demo groups</span>`:''}</summary><div class="in"><p class="muted">Create simulated groups to rehearse the dashboard and the final launch. Remove them before the event starts.</p>
+   <div class="row"><button class="btn small" data-act="fDemo" data-arg="add">Add 12 demo groups</button><button class="btn small" data-act="fDemo" data-arg="step" ${demo?'':'disabled'}>Advance demo groups</button><button class="btn small" data-act="fDemo" data-arg="finish" ${demo?'':'disabled'}>Finish all demo groups</button><button class="btn small warn" data-act="fDemo" data-arg="remove" ${demo?'':'disabled'}>Remove demo groups</button></div></div></details>`;
+  const fq=$('#fq');fq.oninput=()=>{F.q=fq.value;clearTimeout(F.t);F.t=setTimeout(()=>{drawFac();const n=$('#fq');n.focus();n.setSelectionRange(n.value.length,n.value.length)},350)};
+  $('#demosec').ontoggle=e=>{F.demoOpen=e.target.open};
+  $$('[data-fchk]').forEach(c=>c.onchange=()=>setLive({[c.dataset.fchk]:c.checked}));
+  $$('[data-finc]').forEach(c=>c.onchange=()=>setCtrl(c.dataset.finc,{include:c.checked}));
+}
+async function setLive(patch){try{await Store.set('cfg/live',{...lv(),...patch,updatedAt:now()});toast('Saved.')}catch(e){toast(deny(e))}}
+async function setCtrl(id,patch){try{await Store.set('ctrl/'+id,{...(S.ctrl[id]||{}),...patch,updatedAt:now()})}catch(e){toast(deny(e))}}
+const deny=e=>e&&e.code==='invalid_argument'?'Not allowed: you need Editor access to change this.':'Could not save. Please try again.';
+const gById=id=>groups().find(g=>g.groupId===id);
+const ADM={
+  fStatus(a){const L=lv();const patch=a==='live'?{status:'live',startedAt:L.startedAt||now()}:a==='resume'?{status:'live'}:{status:a};
+    if(a==='ended'||a==='setup'){modal({title:a==='ended'?'End the event?':'Mark as not started?',body:`<p class="muted">${a==='ended'?'Groups can still see their progress, but the event shows as ended.':'Registered groups will wait in the harbor until you start the event.'}</p>`,actions:[{label:'Cancel',cls:'ghost'},{label:'Confirm',cls:'primary',fn:()=>setLive(patch)}]});return}
+    setLive(patch)},
+  fFilter(a){F.filter=a;drawFac()},
+  fFinal(){const A=aggregate();if(!A.ready)return;modal({title:'Launch the final animation?',body:`<p>All ${A.N} counted groups have completed all twelve Site Missions.</p><p class="muted">The animation will play on the live dashboard and on every finished group's device.</p>`,actions:[{label:'Not yet',cls:'ghost'},{label:'Launch the ship',cls:'primary',fn:async()=>{await setLive({finalTrigger:(lv().finalTrigger||0)+1,finalAt:now()});playFinal()}}]})},
+  fReplay(){setLive({finalTrigger:(lv().finalTrigger||0)+1,finalAt:now()});playFinal()},
+  fPreview(){playFinal()},
+  fRename(id){const g=gById(id);if(!g)return;modal({title:'Rename group',body:`<div class="field"><label for="rn">New name</label><input class="input" id="rn" maxlength="40" value="${esc(g.name)}"></div><p class="err" id="rnerr"></p>`,actions:[{label:'Cancel',cls:'ghost'},{label:'Rename',cls:'primary',fn:async m=>{
+    const nn=$('#rn',m).value.trim().replace(/\s+/g,' ');if(nn.length<2){$('#rnerr',m).textContent='Enter at least 2 characters.';return false}
+    const k=nameKey(nn),ok=k===nameKey(g.name)||await Store.claim('names/'+k,{groupId:id,name:nn,at:now()});if(!ok){$('#rnerr',m).textContent='That name is already taken.';return false}
+    if(k!==nameKey(g.name))await Store.del('names/'+nameKey(g.name)).catch(()=>{});await setCtrl(id,{name:nn});toast('Group renamed.')}}]})},
+  fExc(id){const g=gById(id);if(!g)return;modal({title:`Technical exception · ${g.name}`,body:`<p class="muted">Use this when a group cannot finish because of a technical problem. The group counts as complete for the final activation. No answers are revealed.</p><div class="field"><label for="exn">Reason (required, kept in the export)</label><textarea class="input" id="exn">${esc(g.exception?.note||'')}</textarea></div><p class="err" id="exerr"></p>`,
+    actions:[...(g.exception?[{label:'Clear exception',cls:'warn',fn:()=>setCtrl(id,{exception:null})}]:[]),{label:'Cancel',cls:'ghost'},{label:'Save exception',cls:'primary',fn:async m=>{const t=$('#exn',m).value.trim();if(t.length<4){$('#exerr',m).textContent='Please describe the issue.';return false}await setCtrl(id,{exception:{note:t.slice(0,300),at:now()}});toast('Exception recorded.')}}]})},
+  fReset(id){const g=gById(id);if(!g)return;modal({title:`Reset ${g.name}?`,body:`<p>This clears all answers and progress for this group so it can start again. Their registration and group name stay the same.</p><div class="field"><label for="rs">Type RESET to confirm</label><input class="input" id="rs" autocomplete="off"></div><p class="err" id="rserr"></p>`,actions:[{label:'Cancel',cls:'ghost'},{label:'Reset group',cls:'warn',fn:async m=>{
+    if($('#rs',m).value.trim().toUpperCase()!=='RESET'){$('#rserr',m).textContent='Type RESET to confirm.';return false}
+    const ep=Math.max(S.ctrl[id]?.resetEpoch||0,(S.groupsRaw.find(d=>d._id===id)?.resetEpoch)||0)+1;
+    await setCtrl(id,{resetEpoch:ep,exception:null});
+    const raw=S.groupsRaw.find(d=>d._id===id);if(raw){const {_id,...rest}=raw;await Store.set('groups/'+id,{...rest,currentCategory:null,currentMission:null,completedCategories:[],completedMissions:[],overallProgress:0,solved:{},attempts:{},briefOpened:{},log:[],status:'registered',completedAt:null,resetEpoch:ep,rev:(raw.rev||0)+1}).catch(()=>{})}
+    toast('Group reset.')}}]})},
+  fRemove(id){const g=gById(id);if(!g)return;modal({title:`Remove ${g.name}?`,body:`<p>Use this for duplicate registrations. The group disappears from the dashboard and stops counting toward completion. Its device returns to the start screen.</p>`,actions:[{label:'Cancel',cls:'ghost'},{label:'Remove group',cls:'warn',fn:async()=>{await setCtrl(id,{removed:true});await Store.del('names/'+nameKey(g.name)).catch(()=>{});if(g.groupName&&nameKey(g.groupName)!==nameKey(g.name))await Store.del('names/'+nameKey(g.groupName)).catch(()=>{});toast('Group removed.')}}]})},
+  async fRecalc(){let fixed=0;const gs=groups();for(const g of gs){const raw=S.groupsRaw.find(d=>d._id===g.groupId);if(!raw)continue;const e=g.ev;
+      const same=JSON.stringify(raw.completedMissions||[])===JSON.stringify(e.done)&&(raw.status||'')===e.status;
+      if(!same){try{await Store.update('groups/'+g.groupId,{completedMissions:e.done,completedCategories:e.catsDone,overallProgress:e.pct,status:e.status});fixed++}catch(err){}await sleep(120)}}
+    modal({title:'Completion recalculated',body:`<p>Checked ${gs.length} groups against their saved answers. ${fixed?`Corrected the stored summary for ${fixed} group${fixed>1?'s':''}.`:'Every stored summary already matched.'}</p><p class="muted">No group answers were changed. Mission completion on the dashboard is always calculated from verified answers.</p>`})},
+  fExport(){const A=aggregate(),ms=CT.all();
+    const head=['Group','Counted','Status','Missions completed','Categories completed','Total attempts','First-try correct','Registered','Completed','Exception',...ms.map(m=>m.code||m.id)];
+    const rows=A.gs.map(g=>{const log=g.log||[];const firsts=log.filter(l=>l.c&&l.n===1).length;return[g.name,g.include!==false?'yes':'no',g.ev.complete?(g.ev.exc?'complete (exception)':'complete'):g.ev.status,g.ev.done.length,g.ev.catsDone.length,log.length,firsts,g.registeredAt?new Date(g.registeredAt).toISOString():'',g.completedAt?new Date(g.completedAt).toISOString():'',g.exception?.note||'',...ms.map(m=>g.ev.done.includes(m.id)?'yes':'')]});
+    const csv=[head,...rows].map(r=>r.map(v=>{const s=String(v);return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s}).join(',')).join('\n');
+    const att=JSON.stringify(A.gs.flatMap(g=>(g.log||[]).map(l=>({group:g.name,questionId:l.q,selectedOptionId:l.o,correct:l.c,attemptNumber:l.n,answeredAt:new Date(l.t).toISOString()}))));
+    modal({title:'Export event results',body:`<p class="muted">Copy and paste into a spreadsheet. One row per group.</p><textarea class="input" id="csv" style="min-height:180px;font-size:13px" readonly>${esc(csv)}</textarea>`,actions:[{label:'Copy answer log (JSON)',cls:'ghost',fn:async()=>{try{await navigator.clipboard.writeText(att);toast('Answer log copied.')}catch(e){toast('Copy blocked. Select the text and copy it manually.')}return false}},{label:'Copy results (CSV)',cls:'primary',fn:async()=>{try{await navigator.clipboard.writeText(csv);toast('Results copied.')}catch(e){$('#csv').select();toast('Copy blocked. The text is selected; press Ctrl+C.')}return false}},{label:'Close',cls:'ghost'}]})},
+  async fDemo(a){
+    const keys=S.keys?.keys||{};if(a!=='remove'&&!Object.keys(keys).length){toast('Answer keys are not loaded. Open the developer config and save the content first.');return}
+    const sims=S.groupsRaw.filter(d=>d.sim);
+    if(a==='add'){const base=S.groupsRaw.length;for(let i=0;i<12;i++){const name=`Demo ship ${pad(base+i+1)}`,id=nameKey(name);await Store.claim('names/'+nameKey(name),{groupId:id,name,at:now()}).catch(()=>{});
+      await Store.set('groups/'+id,{groupId:id,groupName:name,registeredAt:now()+i,solved:{},attempts:{},briefOpened:{},log:[],currentCategory:null,status:'registered',lastActivity:now(),include:true,sim:true,rev:1,resetEpoch:0});await sleep(120)}toast('12 demo groups added.');return}
+    if(a==='remove'){for(const d of sims){await Store.set('ctrl/'+d._id,{removed:true}).catch(()=>{});await Store.del('groups/'+d._id).catch(()=>{});await Store.del('ctrl/'+d._id).catch(()=>{});await Store.del('names/'+nameKey(d.groupName)).catch(()=>{});await sleep(100)}toast('Demo groups removed.');return}
+    const order=CT.all();
+    for(const d of sims){const {_id,...g}=clone(d);g.solved=g.solved||{};g.attempts=g.attempts||{};g.log=g.log||[];
+      let steps=a==='finish'?999:1+Math.floor(Math.random()*4);
+      for(const m of order){for(const q of CT.qs(m.id)){if(steps<=0)break;if(CT.ok(q,g.solved[q.id]))continue;const k=keys[q.id];if(!k)continue;
+        if(Math.random()<.25&&a!=='finish'){g.attempts[q.id]=(g.attempts[q.id]||0)+1;g.log.push({q:q.id,o:'x',c:false,n:g.attempts[q.id],t:now()})}
+        g.attempts[q.id]=(g.attempts[q.id]||0)+1;g.solved[q.id]=k;g.log.push({q:q.id,o:k,c:true,n:g.attempts[q.id],t:now()});g.currentCategory=m.categoryId;g.currentMission=m.id;steps--}}
+      const e=evalGroup(g);g.completedMissions=e.done;g.completedCategories=e.catsDone;g.overallProgress=e.pct;g.status=e.status;g.lastActivity=now();g.rev=(g.rev||0)+1;if(e.complete){g.completedAt=g.completedAt||now();g.currentCategory=null}
+      await Store.set('groups/'+_id,g).catch(()=>{});await sleep(120)}
+    toast(a==='finish'?'All demo groups finished.':'Demo groups advanced.')}
+};
+function watchKeys(){if(S._kw)return;S._kw=true;const u=Store.watch('cfg/keys',d=>{S.keys=d});teardown.push(()=>{u();S._kw=false})}
+
+/* ======================================================================
+   DEVELOPER CONFIG (content + settings). Editor access only in live mode.
+   ====================================================================== */
+const DV={draft:null,set:null,dirty:false,base:0,open:new Set(['s1','s4'])};
+const opn=k=>`data-k="${esc(k)}" ${DV.open.has(k)?'open':''}`;
+function buildDraft(){const c=clone(S.content||{categories:[],missions:[],questions:[]});const k=S.keys?.keys||{};c.questions=(c.questions||[]).map(q=>({...q,correctOptionId:k[q.id]||''}));delete c.salt;return c}
+function renderDev(){
+  watchKeys();
+  if(!DV.draft||!DV.dirty){DV.draft=buildDraft();DV.base=S.content?.updatedAt||0}
+  if(!DV.set||!DV.setDirty)DV.set={event:clone(ev()),live:clone(lv())};
+  $('#app').innerHTML=adminNav('developer')+`<main class="console" id="dev"></main>`;drawDev();
+}
+function redrawDev(focusId){setTimeout(()=>{const id=focusId||document.activeElement?.id;const y=scrollY;drawDev();scrollTo(0,y);const f=id&&document.getElementById(id);if(f){f.focus({preventScroll:!focusId});if(focusId)f.scrollIntoView({block:'center',behavior:reduced?'auto':'smooth'})}},0)}
+function getPath(o,p){return p.split('.').reduce((a,k)=>a?.[k],o)}
+function setPath(o,p,v){const ks=p.split('.');let a=o;ks.slice(0,-1).forEach(k=>{a=a[k]});a[ks[ks.length-1]]=v}
+function fld(label,path,val,type='text',extra=''){const id='d_'+path.replace(/\./g,'_');
+  if(type==='check')return`<label class="sw"><input type="checkbox" id="${id}" data-dp="${esc(path)}" data-dt="check" ${val?'checked':''}> ${esc(label)}</label>`;
+  if(type==='area')return`<div class="field"><label for="${id}">${esc(label)}</label><textarea class="input" id="${id}" data-dp="${esc(path)}" ${extra}>${esc(val)}</textarea></div>`;
+  if(type==='select')return`<div class="field"><label for="${id}">${esc(label)}</label><select class="input" id="${id}" data-dp="${esc(path)}">${extra}</select></div>`;
+  return`<div class="field"><label for="${id}">${esc(label)}</label><input class="input" id="${id}" type="${type}" data-dp="${esc(path)}" data-dt="${type}" value="${esc(val)}" ${extra}></div>`}
+const opt=(v,cur,l)=>`<option value="${esc(v)}" ${String(v)===String(cur)?'selected':''}>${esc(l||v)}</option>`;
+function validateDraft(d){const issues=[];const cats=(d.categories||[]);const n=+DV.set.event.logic.questionsPerMission||3;
+  if(cats.length!==4)issues.push(`There should be exactly 4 categories (found ${cats.length}).`);
+  cats.forEach(c=>{const ms=d.missions.filter(m=>m.categoryId===c.id&&m.active!==false);if(ms.length!==3)issues.push(`${c.code||c.id}: needs exactly 3 active Site Missions (found ${ms.length}).`);
+    ms.forEach(m=>{const qs=d.questions.filter(q=>q.missionId===m.id&&q.active!==false);if(qs.length<Math.max(3,n))issues.push(`${m.code||m.title}: needs at least ${Math.max(3,n)} active questions (found ${qs.length}).`);
+      if(!m.title||!m.summary)issues.push(`${m.code||m.id}: title and summary are required.`);
+      qs.forEach(q=>{const o=(q.options||[]).filter(x=>String(x.text||'').trim());if(o.length<2||o.length>4)issues.push(`${q.id}: needs 2 to 4 answer options.`);if(!o.some(x=>x.id===q.correctOptionId))issues.push(`${q.id}: choose a correct answer.`)})})});
+  return issues}
+function drawDev(){
+  const el=$('#dev');if(!el)return;const d=DV.draft,s=DV.set,E=s.event,lg=E.logic,db=E.dashboard,L=s.live;
+  const issues=validateDraft(d);const iconOpts=cur=>Object.keys(ICONS).map(k=>opt(k,cur)).join('');
+  const conflict=DV.dirty&&(S.content?.updatedAt||0)>DV.base;
+  el.innerHTML=`<section class="card panel"><h2>Developer configuration</h2><p class="muted">All game content and settings live here and are read by the player site at runtime. Players never see this page${S.mode==='live'?', and the database only accepts changes from Editors':''}. Correct answers are stored separately from the questions players load.</p>
+   ${S.content?.placeholder||d.placeholder?`<p class="tag ph" style="margin-top:10px">Placeholder content is loaded. Replace it with official Site Mission 2027 content before the event.</p>`:''}</section>
+  <details class="sec" ${opn('s1')}><summary>1 · Event settings</summary><div class="in"><div class="fgrid">
+   ${fld('Event name','event.eventName',E.eventName)}${fld('Event ID','event.eventId',E.eventId)}
+   ${fld('Event status','live.status',L.status,'select',[['setup','Not started'],['live','Live'],['paused','Paused'],['ended','Ended']].map(([v,l])=>opt(v,L.status,l)).join(''))}
+   ${fld('Start time','event.startTime',E.startTime,'datetime-local')}${fld('End time','event.endTime',E.endTime,'datetime-local')}${fld('Maximum number of groups','event.maxGroups',E.maxGroups,'number','min="1" max="200"')}</div>
+   <div class="row">${fld('Registration open','live.registrationOpen',L.registrationOpen,'check')}${fld('Final animation enabled','event.finalAnimationEnabled',E.finalAnimationEnabled,'check')}</div></div></details>
+  <details class="sec" ${opn('s2')}><summary>2 · Game logic settings</summary><div class="in"><div class="fgrid">
+   ${fld('Questions per mission','event.logic.questionsPerMission',lg.questionsPerMission,'number','min="3" max="10"')}${fld('Maximum attempts before “ask a facilitator” (0 = off)','event.logic.maxAttempts',lg.maxAttempts,'number','min="0" max="10"')}
+   ${fld('Show hint after this many attempts','event.logic.hintThreshold',lg.hintThreshold,'number','min="1" max="10"')}${fld('Mark group inactive after (minutes)','event.logic.timeoutMin',lg.timeoutMin,'number','min="1" max="60"')}
+   ${fld('Session length (minutes)','event.logic.durationMin',lg.durationMin,'number','min="10" max="180"')}
+   ${fld('Final activation condition','event.logic.exceptionsCount',lg.exceptionsCount?'1':'0','select',opt('1',lg.exceptionsCount?'1':'0','All groups complete; technical exceptions count')+opt('0',lg.exceptionsCount?'1':'0','All groups complete; exceptions do not count'))}</div>
+   <div class="row">${fld('Category locking','event.logic.categoryLocking',lg.categoryLocking,'check')}${fld('Shuffle answer options','event.logic.shuffleAnswers',lg.shuffleAnswers,'check')}${fld('Reshuffle on retry','event.logic.shuffleOnRetry',lg.shuffleOnRetry,'check')}${fld('Show session timer','event.logic.timerVisible',lg.timerVisible,'check')}</div>
+   <p class="tiny">Auto-save: progress is written after every answer and every navigation step (fixed, to protect group progress).</p></div></details>
+  <details class="sec" ${opn('s3')}><summary>3 · Dashboard settings</summary><div class="in"><div class="fgrid">
+   ${fld('Default view','event.dashboard.view',db.view,'select',[['groups','Group progress'],['missions','Mission progress'],['network','Network activation']].map(([v,l])=>opt(v,db.view,l)).join(''))}
+   ${fld('Status refresh (seconds)','event.dashboard.refreshSec',db.refreshSec,'number','min="2" max="30"')}${fld('Auto-rotate views every (seconds, 0 = off)','event.dashboard.rotateSec',db.rotateSec,'number','min="0" max="300"')}
+   ${fld('Animation intensity','event.dashboard.intensity',db.intensity,'select',['low','normal','high'].map(v=>opt(v,db.intensity)).join(''))}</div>
+   <div class="row">${fld('Show percentages','event.dashboard.showPercent',db.showPercent,'check')}</div><p class="tiny">Full screen and the final animation trigger are on the dashboard and facilitator pages.</p></div></details>
+  <div class="row"><button class="btn primary" data-act="dSaveSettings">Save settings</button><span class="tiny" id="setmsg"></span></div>
+  <details class="sec" ${opn('s4')}><summary>4 · Categories, Site Missions and questions <span class="tag">${d.missions?.length||0} missions · ${d.questions?.length||0} questions</span></summary><div class="in">
+   <div class="row"><button class="btn small" data-act="dOpenAll">Expand all missions</button><button class="btn small ghost" data-act="dCloseAll">Collapse all</button></div>
+   ${fld('Mark content as placeholder (players see a “Placeholder content” badge)','c.placeholder',!!d.placeholder,'check')}
+   ${conflict?`<p class="tag ph">Someone else saved content while you were editing. Saving will overwrite their changes.</p>`:''}
+   ${issues.length?`<div class="hint"><b>${issues.length} item${issues.length>1?'s':''} to fix before saving:</b><ul>${issues.slice(0,12).map(i=>`<li>${esc(i)}</li>`).join('')}</ul></div>`:`<p class="tag" style="color:var(--green)">${icon('check',16)}Structure valid: 4 categories, 12 missions, enough questions</p>`}
+   ${(d.categories||[]).map((c,ci)=>`<details class="sec" ${opn('c:'+c.id)}><summary><span class="row"><span class="code" style="width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:${safeColor(c.color)};color:#03122b;font-weight:800">${esc(c.code)}</span>${esc(c.name)}</span></summary><div class="in">
+     <div class="fgrid">${fld('Code','c.categories.'+ci+'.code',c.code,'text','maxlength="2"')}${fld('Name','c.categories.'+ci+'.name',c.name)}${fld('Colour','c.categories.'+ci+'.color',safeColor(c.color),'color')}${fld('Display order','c.categories.'+ci+'.order',c.order,'number')}${fld('Icon','c.categories.'+ci+'.icon',c.icon,'select',iconOpts(c.icon))}</div>
+     ${fld('Description','c.categories.'+ci+'.description',c.description,'area')}
+     ${d.missions.map((m,mi)=>m.categoryId!==c.id?'':`<details class="sec" ${opn('m:'+m.id)}><summary>${esc(m.code||'')} · ${esc(m.title)}</summary><div class="in">
+       <div class="fgrid">${fld('Mission ID','c.missions.'+mi+'.id',m.id,'text','readonly')}${fld('Code','c.missions.'+mi+'.code',m.code)}${fld('Title','c.missions.'+mi+'.title',m.title)}${fld('Display order','c.missions.'+mi+'.order',m.order,'number')}${fld('Reading time (minutes)','c.missions.'+mi+'.readMins',m.readMins,'number','min="1" max="3"')}${fld('Icon','c.missions.'+mi+'.icon',m.icon,'select',iconOpts(m.icon))}${fld('Colour','c.missions.'+mi+'.color',safeColor(m.color||c.color),'color')}
+       ${fld('Category','c.missions.'+mi+'.categoryId',m.categoryId,'select',d.categories.map(x=>opt(x.id,m.categoryId,x.code+' · '+x.name)).join(''))}</div>
+       ${fld('One-sentence purpose','c.missions.'+mi+'.purpose',m.purpose)}${fld('Short summary','c.missions.'+mi+'.summary',m.summary,'area')}${fld('Why it matters','c.missions.'+mi+'.why',m.why,'area')}${fld('Expected behaviors (one per line)','c.missions.'+mi+'.behavior',m.behavior,'area')}${fld('Practical example (optional)','c.missions.'+mi+'.example',m.example,'area')}
+       ${fld('Active','c.missions.'+mi+'.active',m.active!==false,'check')}
+       <h3>Questions</h3>${d.questions.map((q,qi)=>q.missionId!==m.id?'':`<div class="qed"><div class="row" style="justify-content:space-between"><b>${esc(q.id)}</b><div class="row">${fld('Active','c.questions.'+qi+'.active',q.active!==false,'check')}${fld('Shuffle','c.questions.'+qi+'.shuffle',q.shuffle!==false,'check')}<button class="btn small warn" data-act="dDelQ" data-arg="${qi}">${icon('trash',16)} Delete</button></div></div>
+         ${fld('Question text','c.questions.'+qi+'.text',q.text,'area','style="min-height:70px"')}
+         ${[0,1,2,3].map(oi=>{const o=(q.options||[])[oi]||{id:'abcd'[oi],text:''};return`<div class="oprow"><label class="sw" title="Correct answer"><input type="radio" name="cor_${qi}" data-cor="${qi}" value="${o.id}" ${q.correctOptionId===o.id?'checked':''}><span class="sr">Mark option ${'ABCD'[oi]} correct</span>${'ABCD'[oi]}</label><input class="input" data-dp="c.questions.${qi}.options.${oi}.text" data-oi="${qi}:${oi}" value="${esc(o.text)}" placeholder="${oi<2?'Answer option':'Optional option'}" aria-label="Option ${'ABCD'[oi]}"></div>`}).join('')}
+         <div class="fgrid">${fld('Learning explanation (completes “Your decision supports [mission] by…”)','c.questions.'+qi+'.explanation',q.explanation)}${fld('Hint (optional)','c.questions.'+qi+'.hint',q.hint)}${fld('Order','c.questions.'+qi+'.order',q.order,'number')}</div></div>`).join('')}
+       <button class="btn small" data-act="dAddQ" data-arg="${esc(m.id)}">+ Add question</button></div></details>`).join('')}</div></details>`).join('')}
+   <div class="row"><button class="btn primary" data-act="dSaveContent" ${issues.length?'disabled':''}>Publish content to the game</button><button class="btn ghost" data-act="dRevert">Discard changes</button><span class="tiny" id="cmsg">${DV.dirty?'Unsaved changes':''}</span></div></div></details>
+  <details class="sec" ${opn('s5')}><summary>5 · Import or export content (JSON)</summary><div class="in"><p class="muted">The JSON includes correct answers. Share it only with the event's content team.</p><textarea class="input" id="dj" style="min-height:160px;font-size:13px" placeholder="Paste content JSON here to import"></textarea>
+   <div class="row"><button class="btn small" data-act="dExport">Copy current content JSON</button><button class="btn small" data-act="dImport">Load JSON into the editor</button></div></div></details>`;
+  $$('details[data-k]',el).forEach(dt=>dt.ontoggle=()=>{dt.open?DV.open.add(dt.dataset.k):DV.open.delete(dt.dataset.k)});
+  el.oninput=el.onchange=e=>{const t=e.target;
+    if(t.dataset.cor!==undefined){DV.draft.questions[+t.dataset.cor].correctOptionId=t.value;DV.dirty=true;$('#cmsg').textContent='Unsaved changes';return}
+    const p=t.dataset.dp;if(!p)return;let v=t.type==='checkbox'?t.checked:t.value;
+    if(t.dataset.dt==='number')v=v===''?'':+v;
+    if(p==='event.logic.exceptionsCount')v=v==='1';
+    if(p.startsWith('c.')){const path=p.slice(2);if(t.dataset.oi){const[qi,oi]=t.dataset.oi.split(':').map(Number);const q=DV.draft.questions[qi];q.options=q.options||[];while(q.options.length<=oi)q.options.push({id:'abcd'[q.options.length],text:''});q.options[oi].text=v}else setPath(DV.draft,path,v);DV.dirty=true;$('#cmsg').textContent='Unsaved changes';
+      if(e.type==='change'&&/categoryId|\.code$|\.color$|\.name$/.test(path))redrawDev()}
+    else{setPath(DV.set,p,v);DV.setDirty=true;$('#setmsg').textContent='Unsaved settings'}};
+}
+Object.assign(ADM,{
+  async dSaveSettings(){try{const s=DV.set;await Store.set('cfg/event',{...s.event,updatedAt:now()});await Store.set('cfg/live',{...lv(),status:s.live.status,registrationOpen:s.live.registrationOpen,updatedAt:now()});DV.setDirty=false;$('#setmsg').textContent='Settings saved '+fmtTime(now());toast('Settings saved.')}catch(e){toast(deny(e))}},
+  async dSaveContent(){const d=clone(DV.draft);if(validateDraft(d).length)return toast('Fix the listed items first.');
+    const salt='sm27-'+Math.random().toString(36).slice(2,10);const keys={};
+    d.questions=d.questions.map(q=>{const options=(q.options||[]).filter(o=>String(o.text||'').trim()).map(o=>({id:o.id,text:String(o.text).trim()}));keys[q.id]=q.correctOptionId;const{correctOptionId,...rest}=q;return{...rest,options,check:cyrb53(salt+'|'+q.id+'|'+correctOptionId)}});
+    ['categories','missions','questions'].forEach(k=>d[k].forEach(x=>{if('order'in x)x.order=+x.order||0}));
+    const content={...d,schema:'sail-with-purpose/content@1',salt,updatedAt:now()};
+    try{await Store.set('cfg/keys',{keys,updatedAt:now()});await Store.set('cfg/content',content);DV.dirty=false;DV.base=content.updatedAt;toast('Content published to the game.');$('#cmsg').textContent='Published '+fmtTime(now())}catch(e){toast(e&&e.code==='quota_exceeded'?'Content is too large to save.':deny(e))}},
+  dRevert(){modal({title:'Discard unsaved changes?',actions:[{label:'Keep editing',cls:'ghost'},{label:'Discard',cls:'warn',fn:()=>{DV.dirty=false;DV.draft=buildDraft();drawDev()}}]})},
+  dOpenAll(){DV.open.add('s4');(DV.draft.categories||[]).forEach(c=>DV.open.add('c:'+c.id));(DV.draft.missions||[]).forEach(m=>DV.open.add('m:'+m.id));redrawDev()},
+  dCloseAll(){[...DV.open].filter(k=>/^[cm]:/.test(k)).forEach(k=>DV.open.delete(k));redrawDev()},
+  dAddQ(mid){const d=DV.draft;const n=d.questions.filter(q=>q.missionId===mid).length+1;let id=`q-${mid.replace(/^m-/,'')}-${n}`;while(d.questions.some(q=>q.id===id))id+='x';d.questions.push({id,missionId:mid,text:'',options:[{id:'a',text:''},{id:'b',text:''},{id:'c',text:''}],correctOptionId:'',explanation:'',hint:'',order:n,active:true,shuffle:true});DV.dirty=true;const mm=d.missions.find(x=>x.id===mid);['s4','m:'+mid].concat(mm?['c:'+mm.categoryId]:[]).forEach(k=>DV.open.add(k));redrawDev('d_c_questions_'+(d.questions.length-1)+'_text');toast('Question added. Type it in, fill the options and pick the correct answer.')},
+  dDelQ(qi){const q=DV.draft.questions[+qi];modal({title:'Delete this question?',body:`<p class="muted">${esc(q?.text||q?.id)}</p>`,actions:[{label:'Cancel',cls:'ghost'},{label:'Delete',cls:'warn',fn:()=>{DV.draft.questions.splice(+qi,1);DV.dirty=true;redrawDev()}}]})},
+  async dExport(){const t=JSON.stringify({...DV.draft,schema:'sail-with-purpose/content@1'},null,2);$('#dj').value=t;try{await navigator.clipboard.writeText(t);toast('Content JSON copied.')}catch(e){toast('Copy blocked. The JSON is in the box below.')}},
+  dImport(){let j;try{j=JSON.parse($('#dj').value)}catch(e){return toast('That is not valid JSON.')}
+    if(!Array.isArray(j.categories)||!Array.isArray(j.missions)||!Array.isArray(j.questions))return toast('JSON needs categories, missions and questions arrays.');
+    const str=v=>String(v??'').slice(0,2000);
+    DV.draft={placeholder:!!j.placeholder,categories:j.categories.map(c=>({id:str(c.id||c.categoryId),code:str(c.code||c.categoryCode).slice(0,2),name:str(c.name||c.categoryName),description:str(c.description),icon:str(c.icon),color:safeColor(c.color),order:+(c.order??c.displayOrder)||0})),
+      missions:j.missions.map(m=>({id:str(m.id||m.missionId),categoryId:str(m.categoryId),code:str(m.code),title:str(m.title||m.missionTitle),purpose:str(m.purpose),summary:str(m.summary||m.shortSummary),why:str(m.why||m.whyItMatters),behavior:str(m.behavior||m.expectedBehavior),example:str(m.example||m.practicalExample),icon:str(m.icon),color:safeColor(m.color),order:+(m.order??m.displayOrder)||0,readMins:+m.readMins||1,active:m.active!==false})),
+      questions:j.questions.map(q=>({id:str(q.id||q.questionId),missionId:str(q.missionId),text:str(q.text||q.questionText),options:(q.options||[]).slice(0,4).map((o,i)=>({id:str(o.id||'abcd'[i]),text:str(o.text)})),correctOptionId:str(q.correctOptionId),explanation:str(q.explanation),hint:str(q.hint),order:+(q.order??q.displayOrder)||0,active:q.active!==false,shuffle:q.shuffle!==false}))};
+    DV.dirty=true;drawDev();toast('Loaded into the editor. Review, then publish.')}
+});
+
+/* ======================================================================
+   FINAL ANIMATION
+   ====================================================================== */
+const FIN={timers:[],playing:false};
+function finalMarkup(){
+  const A=aggregate();const ng=Math.min(Math.max(A.N,P.g?1:0,8),70);const r=seeded('fin');
+  let stars='';for(let i=0;i<120;i++)stars+=`<circle cx="${(r()*1600).toFixed(0)}" cy="${(r()*520).toFixed(0)}" r="${(r()*1.6+.3).toFixed(1)}" fill="#fff" opacity="${(r()*.7+.2).toFixed(2)}" style="animation-delay:${(r()*3).toFixed(1)}s"/>`;
+  const cats=CT.cats(),ms=CT.all();
+  const gp=Array.from({length:ng},(_,i)=>({x:120+i*(1360/Math.max(ng-1,1)),y:120+Math.sin(i*.9)*26}));
+  const mp=ms.map((m,i)=>({x:200+i*(1200/Math.max(ms.length-1,1)),y:300,col:safeColor(m.color),m}));
+  const cp=cats.map((c,i)=>({x:380+i*280,y:420,col:safeColor(c.color),c}));
+  const ship={x:470,y:500},tgt={x:620,y:470};
+  let edges='',nodes='';
+  gp.forEach((g,i)=>{const pick=ng<=20?mp:[mp[i%mp.length],mp[(i+4)%mp.length],mp[(i+8)%mp.length]].filter(Boolean);pick.forEach(m=>{edges+=`<path class="fe gm" pathLength="1" d="M${g.x} ${g.y}Q${(g.x+m.x)/2} ${g.y+90} ${m.x} ${m.y}" stroke="${m.col}" stroke-width="1" opacity=".45" fill="none"/>`})});
+  mp.forEach((m,i)=>{const c=cp.find(x=>x.c.id===m.m.categoryId)||cp[0];edges+=`<path class="fe mc" pathLength="1" d="M${m.x} ${m.y}L${c.x} ${c.y}" stroke="${m.col}" stroke-width="2" opacity=".8" fill="none"/>`});
+  cp.forEach(c=>{edges+=`<path class="fe cs" pathLength="1" d="M${c.x} ${c.y}Q${(c.x+tgt.x)/2} ${Math.max(c.y,tgt.y)+60} ${tgt.x} ${tgt.y}" stroke="${c.col}" stroke-width="3.5" opacity=".95" fill="none" filter="url(#fglow)"/>`});
+  gp.forEach(g=>nodes+=`<circle class="fn g" cx="${g.x}" cy="${g.y}" r="6" fill="#41f2a5" filter="url(#fglow)"/>`);
+  mp.forEach(m=>nodes+=`<circle class="fn m" cx="${m.x}" cy="${m.y}" r="15" fill="${m.col}" filter="url(#fglow)"/><text class="fn m" x="${m.x}" y="${m.y+4}" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-weight="700" font-size="11" fill="#03122b">${esc(m.m.code||'')}</text>`);
+  cp.forEach(c=>nodes+=`<circle class="fn c" cx="${c.x}" cy="${c.y}" r="24" fill="${c.col}" filter="url(#fglow)"/><text class="fn c" x="${c.x}" y="${c.y+7}" text-anchor="middle" font-family="Sora, Inter, system-ui, sans-serif" font-weight="800" font-size="20" fill="#03122b">${esc(c.c.code)}</text>`);
+  return`<svg class="fs" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs>
+   <linearGradient id="fsky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#01061a"/><stop offset=".55" stop-color="#0a1f4a"/><stop offset="1" stop-color="#1b4c88"/></linearGradient>
+   <linearGradient id="fsea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0e3770"/><stop offset="1" stop-color="#010818"/></linearGradient>
+   <linearGradient id="fa1" x1="0" x2="1"><stop offset="0" stop-color="#41f2a5" stop-opacity="0"/><stop offset=".3" stop-color="#41f2a5"/><stop offset=".65" stop-color="#33e6f2"/><stop offset="1" stop-color="#9479ff" stop-opacity="0"/></linearGradient>
+   <linearGradient id="fa2" x1="0" x2="1"><stop offset="0" stop-color="#9479ff" stop-opacity="0"/><stop offset=".45" stop-color="#ff52b9" stop-opacity=".85"/><stop offset=".8" stop-color="#9479ff"/><stop offset="1" stop-color="#9479ff" stop-opacity="0"/></linearGradient>
+   <radialGradient id="fhz"><stop offset="0" stop-color="#fff"/><stop offset=".25" stop-color="#d9fbff" stop-opacity=".8"/><stop offset="1" stop-color="#33e6f2" stop-opacity="0"/></radialGradient>
+   <linearGradient id="fsail" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#a6f4ff"/></linearGradient>
+   <filter id="fblur"><feGaussianBlur stdDeviation="26"/></filter><filter id="fglow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+   <rect width="1600" height="900" fill="url(#fsky)"/><g class="stars">${stars}</g>
+   <g class="aur" filter="url(#fblur)"><path d="M-120 250C180 110 480 330 800 190S1400 70 1720 210V320C1400 190 1100 420 800 300S180 230 -120 370Z" fill="url(#fa1)"/><path d="M-60 130C260 40 520 200 860 110S1420 40 1700 120V170C1400 110 1120 250 860 190S260 110 -60 220Z" fill="url(#fa2)"/></g>
+   <ellipse class="hz" cx="1300" cy="590" rx="460" ry="90" fill="url(#fhz)"/>
+   <rect y="590" width="1600" height="310" fill="url(#fsea)"/>
+   <g class="aur" opacity=".35" filter="url(#fblur)" transform="translate(0 1180) scale(1 -1)"><path d="M-120 250C180 110 480 330 800 190S1400 70 1720 210V320C1400 190 1100 420 800 300S180 230 -120 370Z" fill="url(#fa1)"/></g>
+   <g stroke="#9ff6ff" stroke-opacity=".22" stroke-width="2">${Array.from({length:9},(_,i)=>`<path d="M${(i*173)%1400} ${612+i*30}h${140+i*18}"/>`).join('')}</g>
+   <g><rect x="0" y="606" width="330" height="16" fill="#0a1d42"/>${[30,90,150,210,270].map(x=>`<rect x="${x}" y="622" width="8" height="40" fill="#081733"/>`).join('')}<path d="M70 606L80 470H104L114 606Z" fill="#0c2450" stroke="#33e6f2" stroke-width="1.5"/><rect x="78" y="452" width="28" height="20" fill="#fff3c4" class="nl"/><path class="beam" d="M106 462L420 420V505Z" fill="#fff3c4"/></g>
+   <g class="fnet">${edges}${nodes}</g>
+   <g class="shipmove"><g transform="translate(${ship.x} ${ship.y+96})">
+    <path class="wake" d="M0 8C-90 16-220 10-360 22M10 16C-80 28-200 30-300 40" stroke="#c9fbff" stroke-width="3" fill="none"/>
+    <path d="M-10 -24H340L306 20H22Z" fill="#081a3a" stroke="#33e6f2" stroke-width="2.5"/><path d="M40 -24H300" stroke="#41f2a5" stroke-width="2" opacity=".7"/>
+    <path d="M212 -24V-60H272L294 -24Z" fill="#11295a" stroke="#33e6f2" stroke-width="1.5"/>${[222,240,258].map(x=>`<rect class="win" x="${x}" y="-52" width="12" height="9" rx="2"/>`).join('')}
+    <line x1="150" y1="-24" x2="150" y2="-270" stroke="#e8f4ff" stroke-width="5"/>
+    <path class="sail" d="M144 -258Q66 -150 54 -34H144Z" fill="url(#fsail)"/><path class="sail" d="M158 -252L318 -34H158Z" fill="url(#fsail)" opacity=".92"/>
+    <circle class="nl" cx="150" cy="-280" r="7" fill="#fff" filter="url(#fglow)"/><circle class="nl" cx="330" cy="-12" r="6" fill="#41f2a5" filter="url(#fglow)"/><circle class="nl" cx="6" cy="-12" r="6" fill="#ff5d6c" filter="url(#fglow)"/></g></g></svg>
+  <div class="fin-t"><h1>SITE MISSION 2027 ACTIVATED</h1><p>Ready. Rise. Win.<br>We Sail with Purpose.</p></div>
+  <p class="fin-cap" id="fcap" aria-live="polite"></p>
+  <div class="fin-ctl"><button class="btn small" id="frep">${icon('refresh',18)}Replay</button><button class="btn small" id="ffs">${icon('expand',18)}Full screen</button><button class="btn small" id="fx">${icon('x',18)}Close</button></div>`;
+}
+function playFinal(){
+  const el=$('#final');FIN.timers.forEach(clearTimeout);FIN.timers=[];
+  el.className='final';el.innerHTML=finalMarkup();el.hidden=false;
+  const steps=[[0,'The complete mission network lights up.'],[3200,'Aurora energy flows from every group to the twelve Site Missions.'],[7000,'E, P, I and C channel the energy toward the ship.'],[10500,'The ship\'s navigation lights turn on.'],[12500,'The sails unfurl.'],[15000,'The ship moves out of the harbor.'],[19000,'It begins sailing toward a bright horizon.'],[21000,'Aurora lights spread across the sky and water.'],[26000,'Site Mission 2027 activated. Ready. Rise. Win. We sail with purpose.']];
+  const k=reduced?.45:1;
+  steps.forEach(([t,cap],i)=>FIN.timers.push(setTimeout(()=>{el.classList.add('s'+(i+1));const c=$('#fcap');if(c)c.textContent=cap},t*k+60)));
+  $('#frep').onclick=()=>playFinal();
+  $('#ffs').onclick=()=>{(document.fullscreenElement?document.exitFullscreen():el.requestFullscreen?.())?.catch?.(()=>toast('Full screen is not available here.'))};
+  $('#fx').onclick=()=>{FIN.timers.forEach(clearTimeout);el.hidden=true;el.innerHTML='';if(document.fullscreenElement)document.exitFullscreen().catch(()=>{})};
+  setTimeout(()=>$('#fx')?.focus(),100);
+}
+
+/* ======================================================================
+   BOOT
+   ====================================================================== */
+function onLive(d){
+  const prev=S.live?.finalTrigger;S.live=d;S.liveOk=true;S.lastUpdate=now();
+  const ft=d?.finalTrigger||0;
+  if(D.finalSeen===null)D.finalSeen=ft;
+  else if(ft>D.finalSeen){D.finalSeen=ft;const v=view();if(ev().finalAnimationEnabled&&(v==='dashboard'||(v==='play'&&P.g&&evalGroup(P.g).complete)))playFinal()}
+  refreshView();
+}
+function refreshView(){const v=view();if(v==='play')rerender();else if(v==='dashboard')schedDash();else if(v==='facilitator')schedFac();else if(v==='developer'&&!DV.dirty&&!DV.setDirty&&!$('#dev:focus-within'))renderDev()}
+async function boot(){
+  let c=window.claude;
+  for(let i=0;i<6&&!(c&&c.use);i++){await sleep(200);c=window.claude}
+  let db=null,user=null;
+  if(c&&c.use){const to=new Promise(r=>setTimeout(()=>r(null),10000));try{[db,user]=await Promise.all([Promise.race([c.use('db'),to]),Promise.race([c.use('user'),to])])}catch(e){}}
+  if(db){Store.db=db;S.mode='live';try{S.admin=!!(await user?.canEdit?.())}catch(e){S.admin=false}try{S.canWrite=await user?.can?.('data.write')}catch(e){}}
+  else{S.mode='local';S.admin=true}
+  let first=0;const ready=()=>{if(++first===3){if(view()==='play'){resumeDevice().then(r=>{renderPlay()})}else render()}};
+  Store.watch('cfg/event',d=>{S.event=d;S.eventOk=true;if(first<3)ready();else refreshView()});
+  Store.watch('cfg/live',d=>{if(first<3){S.live=d;D.finalSeen=d?.finalTrigger||0;S.liveOk=true;ready()}else onLive(d)});
+  Store.watch('cfg/content',d=>{S.content=d;S.contentOk=true;if(first<3)ready();else refreshView()});
+  setTimeout(()=>{if(first<3){S.slow=true;first=2;ready()}},10000);
+  setInterval(()=>{chrome()},1000);
+  trapBack();
+}
+boot();
+}
+</script>
+</body>
+</html>
