@@ -169,6 +169,7 @@ details.sec .in{padding:18px 20px;display:grid;gap:14px}
 .fgrid .input{min-height:46px;font-size:16px;padding:9px 12px}
 .qed{padding:14px;border:1px solid var(--line);border-radius:14px;display:grid;gap:10px;background:rgba(5,15,36,.5)}
 .oprow{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:center}
+.savebar{position:sticky;bottom:12px;z-index:15;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:10px 16px;border-radius:16px;background:rgba(8,26,58,.97);border:1px solid var(--line);box-shadow:0 12px 40px -12px #000;font-weight:600;color:var(--soft)}.savebar.dirty{border-color:var(--amber);color:#ffd98a}
 .adminnav{display:flex;gap:6px;flex-wrap:wrap}
 .adminnav a{color:var(--soft);text-decoration:none;padding:8px 12px;border-radius:10px;font-size:14px;font-weight:600;min-height:44px;display:inline-flex;align-items:center}
 .adminnav a[aria-current=page]{color:var(--ink);background:var(--panel2)}
@@ -938,6 +939,8 @@ function drawFac(){
 }
 async function setLive(patch){try{await Store.set('cfg/live',{...lv(),...patch,updatedAt:now()});toast('Saved.')}catch(e){toast(deny(e))}}
 async function setCtrl(id,patch){try{await Store.set('ctrl/'+id,{...(S.ctrl[id]||{}),...patch,updatedAt:now()})}catch(e){toast(deny(e))}}
+function saveFailed(what,e){const why=e&&e.code==='invalid_argument'?(S.backend==='firebase'?'This account is not allowed to change the game. Log in with an admin email that is listed in the Firestore rules.':'This account is not allowed to change the game. Only the page owner and people it is shared with as Editor can save.'):e&&e.code==='quota_exceeded'?'The content is too large to save.':e&&(e.code==='unavailable'||e.code==='revoked')?'The connection to the game database dropped. Check the internet connection, then try again.':'Something went wrong while saving.';
+  modal({title:`Your ${what} was not saved`,body:`<p>${esc(why)}</p><p class="muted">Your edits are still on this screen, so you can try again without retyping them.</p>${e&&e.code?`<p class="tiny">Error code: ${esc(e.code)}</p>`:''}`,actions:[{label:'OK',cls:'primary'}]})}
 const deny=e=>e&&e.code==='invalid_argument'?'Not allowed: you need Editor access to change this.':'Could not save. Please try again.';
 const gById=id=>groups().find(g=>g.groupId===id);
 const ADM={
@@ -987,7 +990,12 @@ const ADM={
       await Store.set('groups/'+_id,g).catch(()=>{});await sleep(120)}
     toast(a==='finish'?'All demo groups finished.':'Demo groups advanced.')}
 };
-function watchKeys(){if(S._kw)return;S._kw=true;const u=Store.watch('cfg/keys',d=>{S.keys=d});teardown.push(()=>{u();S._kw=false})}
+function watchKeys(){if(S._kw)return;S._kw=true;const u=Store.watch('cfg/keys',(d,meta)=>{if(!d&&meta&&meta.fromCache)return;S.keys=d;S.keysOk=true;if(view()==='developer')keysArrived()},()=>{S.keysOk=true;if(view()==='developer'&&$('#dev'))redrawDev()});teardown.push(()=>{u();S._kw=false})}
+/* the answer key loads after the editor opens: fill it into the form instead of leaving every question without a correct answer */
+function keysArrived(){const k=S.keys?.keys||{};if(!DV.draft||!DV.dirty){DV.draft=buildDraft();DV.base=S.content?.updatedAt||0}else(DV.draft.questions||[]).forEach(q=>{if(!q.correctOptionId&&k[q.id])q.correctOptionId=k[q.id]});if($('#dev'))redrawDev()}
+function updBar(){const m=DV.dirty&&DV.setDirty?'Unsaved changes to content and settings':DV.dirty?'Unsaved content changes':DV.setDirty?'Unsaved settings':(DV.lastPub?'All changes published '+fmtTime(DV.lastPub):'Everything is saved');
+  const sb=$('#sbmsg');if(sb){sb.textContent=m;sb.parentElement.classList.toggle('dirty',!!(DV.dirty||DV.setDirty))}const c=$('#cmsg');if(c)c.textContent=DV.dirty?'Unsaved changes':DV.lastPub?'Published '+fmtTime(DV.lastPub):'';const st=$('#setmsg');if(st)st.textContent=DV.setDirty?'Unsaved settings':DV.lastSet?'Settings saved '+fmtTime(DV.lastSet):''}
+function showIssues(list){modal({title:`${list.length} item${list.length>1?'s':''} to fix before publishing`,body:`<p class="muted">Open the mission named in each line, fix it, then publish again.</p><ul>${list.map(i=>`<li>${esc(i)}</li>`).join('')}</ul>`,actions:[{label:'OK',cls:'primary'}]})}
 
 /* ======================================================================
    DEVELOPER CONFIG (content + settings). Editor access only in live mode.
@@ -1019,9 +1027,11 @@ function validateDraft(d){const issues=[];const cats=(d.categories||[]);const n=
   return issues}
 function drawDev(){
   const el=$('#dev');if(!el)return;const d=DV.draft,s=DV.set,E=s.event,lg=E.logic,db=E.dashboard,L=s.live;
+  const kLoading=!S.keysOk&&S.mode==='live'&&(d.questions||[]).length>0,kMissing=S.keysOk&&!S.keys&&(d.questions||[]).length>0;
   const issues=validateDraft(d);const iconOpts=cur=>Object.keys(ICONS).map(k=>opt(k,cur)).join('');
   const conflict=DV.dirty&&(S.content?.updatedAt||0)>DV.base;
   el.innerHTML=`<section class="card panel"><h2>Developer configuration</h2><p class="muted">All game content and settings live here and are read by the player site at runtime. Players never see this page${S.mode==='live'?', and the database only accepts changes from Editors':''}. Correct answers are stored separately from the questions players load.</p>
+   ${S.mode==='local'?`<p class="hint" style="margin-top:10px">${icon('alert',16)} This screen is not connected to the live game database (rehearsal mode), so changes are saved in this browser only. To edit the live game, open its live address with the database connected.</p>`:''}
    ${S.content?.placeholder||d.placeholder?`<p class="tag ph" style="margin-top:10px">Placeholder content is loaded. Replace it with official Site Mission 2027 content before the event.</p>`:''}</section>
   <details class="sec" ${opn('s1')}><summary>1 · Event settings</summary><div class="in"><div class="fgrid">
    ${fld('Event name','event.eventName',E.eventName)}${fld('Event ID','event.eventId',E.eventId)}
@@ -1045,7 +1055,7 @@ function drawDev(){
    <div class="row"><button class="btn small" data-act="dOpenAll">Expand all missions</button><button class="btn small ghost" data-act="dCloseAll">Collapse all</button></div>
    ${fld('Mark content as placeholder (players see a “Placeholder content” badge)','c.placeholder',!!d.placeholder,'check')}
    ${conflict?`<p class="tag ph">Someone else saved content while you were editing. Saving will overwrite their changes.</p>`:''}
-   ${issues.length?`<div class="hint"><b>${issues.length} item${issues.length>1?'s':''} to fix before saving:</b><ul>${issues.slice(0,12).map(i=>`<li>${esc(i)}</li>`).join('')}</ul></div>`:`<p class="tag" style="color:var(--green)">${icon('check',16)}Structure valid: 4 categories, 12 missions, enough questions</p>`}
+   ${kLoading?`<p class="tag">${icon('clock',16)}Loading the correct answers…</p>`:kMissing?`<p class="hint">${icon('alert',16)} The correct answers could not be loaded for this account, so questions show no correct answer. ${S.backend==='firebase'?'Log out and log in again with an admin account listed in the database rules.':'Open the game while signed in as the page owner or an Editor.'}</p>`:issues.length?`<div class="hint"><b>${issues.length} item${issues.length>1?'s':''} to fix before publishing:</b><ul>${issues.slice(0,12).map(i=>`<li>${esc(i)}</li>`).join('')}</ul>${issues.length>12?`<p class="tiny">…and ${issues.length-12} more. Click Publish to see the full list.</p>`:''}</div>`:`<p class="tag" style="color:var(--green)">${icon('check',16)}Structure valid: 4 categories, 12 missions, enough questions</p>`}
    ${(d.categories||[]).map((c,ci)=>`<details class="sec" ${opn('c:'+c.id)}><summary><span class="row"><span class="code" style="width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:${safeColor(c.color)};color:#03122b;font-weight:800">${esc(c.code)}</span>${esc(c.name)}</span></summary><div class="in">
      <div class="fgrid">${fld('Code','c.categories.'+ci+'.code',c.code,'text','maxlength="2"')}${fld('Name','c.categories.'+ci+'.name',c.name)}${fld('Colour','c.categories.'+ci+'.color',safeColor(c.color),'color')}${fld('Display order','c.categories.'+ci+'.order',c.order,'number')}${fld('Icon','c.categories.'+ci+'.icon',c.icon,'select',iconOpts(c.icon))}</div>
      ${fld('Description','c.categories.'+ci+'.description',c.description,'area')}
@@ -1059,27 +1069,29 @@ function drawDev(){
          ${[0,1,2,3].map(oi=>{const o=(q.options||[])[oi]||{id:'abcd'[oi],text:''};return`<div class="oprow"><label class="sw" title="Correct answer"><input type="radio" name="cor_${qi}" data-cor="${qi}" value="${o.id}" ${q.correctOptionId===o.id?'checked':''}><span class="sr">Mark option ${'ABCD'[oi]} correct</span>${'ABCD'[oi]}</label><input class="input" data-dp="c.questions.${qi}.options.${oi}.text" data-oi="${qi}:${oi}" value="${esc(o.text)}" placeholder="${oi<2?'Answer option':'Optional option'}" aria-label="Option ${'ABCD'[oi]}"></div>`}).join('')}
          <div class="fgrid">${fld('Learning explanation (completes “Your decision supports [mission] by…”)','c.questions.'+qi+'.explanation',q.explanation)}${fld('Hint (optional)','c.questions.'+qi+'.hint',q.hint)}${fld('Order','c.questions.'+qi+'.order',q.order,'number')}</div></div>`).join('')}
        <button class="btn small" data-act="dAddQ" data-arg="${esc(m.id)}">+ Add question</button></div></details>`).join('')}</div></details>`).join('')}
-   <div class="row"><button class="btn primary" data-act="dSaveContent" ${issues.length?'disabled':''}>Publish content to the game</button><button class="btn ghost" data-act="dRevert">Discard changes</button><span class="tiny" id="cmsg">${DV.dirty?'Unsaved changes':''}</span></div></div></details>
+   <div class="row"><button class="btn primary" data-act="dSaveContent" ${kLoading?'disabled':''}>Publish content to the game</button><button class="btn ghost" data-act="dRevert">Discard changes</button><span class="tiny" id="cmsg">${DV.dirty?'Unsaved changes':''}</span></div></div></details>
   <details class="sec" ${opn('s5')}><summary>5 · Import or export content (JSON)</summary><div class="in"><p class="muted">The JSON includes correct answers. Share it only with the event's content team.</p><textarea class="input" id="dj" style="min-height:160px;font-size:13px" placeholder="Paste content JSON here to import"></textarea>
-   <div class="row"><button class="btn small" data-act="dExport">Copy current content JSON</button><button class="btn small" data-act="dImport">Load JSON into the editor</button></div></div></details>`;
+   <div class="row"><button class="btn small" data-act="dExport">Copy current content JSON</button><button class="btn small" data-act="dImport">Load JSON into the editor</button></div></div></details>
+  <div class="savebar" role="region" aria-label="Save changes"><span id="sbmsg" aria-live="polite"></span><div class="row"><button class="btn small" data-act="dSaveSettings">Save settings</button><button class="btn small primary" data-act="dSaveContent" ${kLoading?'disabled':''}>Publish content to the game</button></div></div>`;
+  updBar();
   $$('details[data-k]',el).forEach(dt=>dt.ontoggle=()=>{dt.open?DV.open.add(dt.dataset.k):DV.open.delete(dt.dataset.k)});
   el.oninput=el.onchange=e=>{const t=e.target;
-    if(t.dataset.cor!==undefined){DV.draft.questions[+t.dataset.cor].correctOptionId=t.value;DV.dirty=true;$('#cmsg').textContent='Unsaved changes';return}
+    if(t.dataset.cor!==undefined){DV.draft.questions[+t.dataset.cor].correctOptionId=t.value;DV.dirty=true;updBar();return}
     const p=t.dataset.dp;if(!p)return;let v=t.type==='checkbox'?t.checked:t.value;
     if(t.dataset.dt==='number')v=v===''?'':+v;
     if(p==='event.logic.exceptionsCount')v=v==='1';
-    if(p.startsWith('c.')){const path=p.slice(2);if(t.dataset.oi){const[qi,oi]=t.dataset.oi.split(':').map(Number);const q=DV.draft.questions[qi];q.options=q.options||[];while(q.options.length<=oi)q.options.push({id:'abcd'[q.options.length],text:''});q.options[oi].text=v}else setPath(DV.draft,path,v);DV.dirty=true;$('#cmsg').textContent='Unsaved changes';
+    if(p.startsWith('c.')){const path=p.slice(2);if(t.dataset.oi){const[qi,oi]=t.dataset.oi.split(':').map(Number);const q=DV.draft.questions[qi];q.options=q.options||[];while(q.options.length<=oi)q.options.push({id:'abcd'[q.options.length],text:''});q.options[oi].text=v}else setPath(DV.draft,path,v);DV.dirty=true;updBar();
       if(e.type==='change'&&/categoryId|\.code$|\.color$|\.name$/.test(path))redrawDev()}
-    else{setPath(DV.set,p,v);DV.setDirty=true;$('#setmsg').textContent='Unsaved settings'}};
+    else{setPath(DV.set,p,v);DV.setDirty=true;updBar()}};
 }
 Object.assign(ADM,{
-  async dSaveSettings(){try{const s=DV.set;await Store.set('cfg/event',{...s.event,updatedAt:now()});await Store.set('cfg/live',{...lv(),status:s.live.status,registrationOpen:s.live.registrationOpen,updatedAt:now()});DV.setDirty=false;$('#setmsg').textContent='Settings saved '+fmtTime(now());toast('Settings saved.')}catch(e){toast(deny(e))}},
-  async dSaveContent(){const d=clone(DV.draft);if(validateDraft(d).length)return toast('Fix the listed items first.');
+  async dSaveSettings(){try{const s=DV.set;await Store.set('cfg/event',{...s.event,updatedAt:now()});await Store.set('cfg/live',{...lv(),status:s.live.status,registrationOpen:s.live.registrationOpen,updatedAt:now()});DV.setDirty=false;DV.lastSet=now();updBar();toast('Settings saved.')}catch(e){console.error(e);saveFailed('settings',e)}},
+  async dSaveContent(){const d=clone(DV.draft);if(!S.keysOk&&S.mode==='live')return toast('Still loading the correct answers. Try again in a moment.');const iss=validateDraft(d);if(iss.length)return showIssues(iss);
     const salt='sm27-'+Math.random().toString(36).slice(2,10);const keys={};
     d.questions=d.questions.map(q=>{const options=(q.options||[]).filter(o=>String(o.text||'').trim()).map(o=>({id:o.id,text:String(o.text).trim()}));keys[q.id]=q.correctOptionId;const{correctOptionId,...rest}=q;return{...rest,options,check:cyrb53(salt+'|'+q.id+'|'+correctOptionId)}});
     ['categories','missions','questions'].forEach(k=>d[k].forEach(x=>{if('order'in x)x.order=+x.order||0}));
     const content={...d,schema:'sail-with-purpose/content@1',salt,updatedAt:now()};
-    try{await Store.set('cfg/keys',{keys,updatedAt:now()});await Store.set('cfg/content',content);DV.dirty=false;DV.base=content.updatedAt;toast('Content published to the game.');$('#cmsg').textContent='Published '+fmtTime(now())}catch(e){toast(e&&e.code==='quota_exceeded'?'Content is too large to save.':deny(e))}},
+    try{await Store.set('cfg/keys',{keys,updatedAt:now()});await Store.set('cfg/content',content);DV.dirty=false;DV.base=content.updatedAt;DV.lastPub=now();updBar();toast('Content published to the game. Players see it right away.')}catch(e){console.error(e);saveFailed('content',e)}},
   dRevert(){modal({title:'Discard unsaved changes?',actions:[{label:'Keep editing',cls:'ghost'},{label:'Discard',cls:'warn',fn:()=>{DV.dirty=false;DV.draft=buildDraft();drawDev()}}]})},
   dOpenAll(){DV.open.add('s4');(DV.draft.categories||[]).forEach(c=>DV.open.add('c:'+c.id));(DV.draft.missions||[]).forEach(m=>DV.open.add('m:'+m.id));redrawDev()},
   dCloseAll(){[...DV.open].filter(k=>/^[cm]:/.test(k)).forEach(k=>DV.open.delete(k));redrawDev()},
