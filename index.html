@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Sail with Purpose</title>
+<title>Mission Voyage 2027</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -221,31 +221,35 @@ details.sec .in{padding:18px 20px;display:grid;gap:14px}
 .final{position:fixed;inset:0;z-index:90;background:#020817;overflow:hidden}
 .final[hidden]{display:none}
 .final svg.fs{position:absolute;inset:0;width:100%;height:100%}
-.fin-t{position:absolute;left:0;right:0;top:12%;text-align:center;opacity:0;transform:translateY(16px);transition:opacity 1.6s,transform 1.6s;padding:0 16px}
-.fin-t h1{font-size:clamp(34px,6vw,92px);letter-spacing:.04em;color:#fff;text-shadow:0 0 30px rgba(159,246,255,.8),0 0 70px rgba(65,242,165,.5)}
-.fin-t p{margin-top:14px;font-family:var(--disp);font-weight:600;font-size:clamp(18px,2.4vw,32px);color:#e6fbff;opacity:0;transition:opacity 1.6s 1.2s}
-.final.s9 .fin-t{opacity:1;transform:none}.final.s9 .fin-t p{opacity:1}
+.fin-t{position:absolute;left:0;right:0;top:11%;text-align:center;opacity:0;transform:translateY(16px);transition:opacity 1.6s,transform 1.6s;padding:0 16px}
+.fin-t h1{font-size:clamp(34px,6vw,92px);letter-spacing:.04em;text-transform:uppercase;color:#fff;text-shadow:0 0 30px rgba(159,246,255,.8),0 0 70px rgba(65,242,165,.5)}
+.fin-t p{margin-top:14px;font-family:var(--disp);font-weight:700;font-size:clamp(20px,2.6vw,36px);letter-spacing:.03em;color:#e6fbff;opacity:0;transition:opacity 1.6s 1.2s}
+.fin-t p.l1{font-size:clamp(26px,3.4vw,48px);letter-spacing:.08em;margin-top:18px}.fin-t p.l2{margin-top:6px;transition-delay:2.4s}
+.final.s-end .fin-t{opacity:1;transform:none}.final.s-end .fin-t p{opacity:1}
 .fin-cap{position:absolute;left:50%;bottom:86px;transform:translateX(-50%);background:rgba(2,8,23,.72);padding:8px 16px;border-radius:10px;font-size:16px;color:#dbe8ff;max-width:90vw;text-align:center}
 .fin-ctl{position:absolute;right:16px;bottom:16px;display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
 .fin-ctl .btn{background:rgba(17,41,90,.8)}
+.final .radar{opacity:0;transition:opacity 1.4s}.final.s-radar .radar{opacity:1}.final.s-go .radar{opacity:0;transition:opacity 3s}
+.final .rg{opacity:0;transition:opacity .6s}.final.s-radar .rg{opacity:.9}
+.final .rgl{stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 2s ease-out}.final.s-groups .rgl{stroke-dashoffset:0}
+.final .rn{opacity:.28;transition:opacity .6s}.final .rn .halo{opacity:0;transition:opacity .8s}
+.final .rb{stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 1.2s ease-out}
+.final.c1 .rn0,.final.c2 .rn1,.final.c3 .rn2,.final.c4 .rn3{opacity:1}
+.final.c1 .rn0 .halo,.final.c2 .rn1 .halo,.final.c3 .rn2 .halo,.final.c4 .rn3 .halo{opacity:1}
+.final.c1 .rb0,.final.c2 .rb1,.final.c3 .rb2,.final.c4 .rb3{stroke-dashoffset:0}
+.final .core{opacity:0;transition:opacity 1s}.final.s-power .core{opacity:1}
 .final .sail{transform:scaleY(0);transform-box:fill-box;transform-origin:50% 100%;transition:transform 2.2s cubic-bezier(.2,.8,.2,1)}
-.final.s5 .sail{transform:scaleY(1)}
-.final .nl{opacity:.12;transition:opacity .8s}.final .beam{opacity:0;transition:opacity 1.2s}.final.s4 .beam{opacity:.14}
-.final.s4 .nl{opacity:1}
-.final .win{fill:#1d3a6e;transition:fill 1s}.final.s4 .win{fill:#fff3c4}
-.final .shipmove{transform-box:fill-box;transform-origin:50% 92%;transition:transform 13s cubic-bezier(.45,0,.3,1)}
-.final.s6 .shipmove{transform:translate(860px,6px) scale(.58)}
-.final .wake{opacity:0;transition:opacity 2s}.final.s6 .wake{opacity:.7}
-.final .aur{opacity:0;transition:opacity 4s}.final.s8 .aur{opacity:1}
+.final.s-sail .sail{transform:scaleY(1)}
+.final .nl{opacity:.12;transition:opacity .8s}.final.s-power .nl{opacity:1}
+.final .win{fill:#1d3a6e;transition:fill 1s}.final.s-power .win{fill:#fff3c4}
+.final .shipmove{transform-box:fill-box;transform-origin:50% 92%;transition:transform 11s cubic-bezier(.45,0,.3,1)}
+.final.s-go .shipmove{transform:translate(500px,14px) scale(.5)}
+.final .wake{opacity:0;transition:opacity 2s}.final.s-go .wake{opacity:.7}
+.final .aur{opacity:0;transition:opacity 4s}.final.s-aurora .aur{opacity:1}
 .final .aur path{animation:sway 9s ease-in-out infinite alternate}
 .final .aur path+path{animation-duration:12s}
 @keyframes sway{to{transform:translateX(-60px) scaleY(1.12)}}
-.final .hz{opacity:.25;transition:opacity 4s}.final.s7 .hz{opacity:1}
-.final .fnet{opacity:0;transition:opacity 1.5s}.final.s1 .fnet{opacity:1}.final.s6 .fnet{opacity:.18;transition:opacity 4s}
-.final .fn{opacity:0;transition:opacity .8s}
-.final.s1 .fn.g{opacity:1}.final.s2 .fn.m{opacity:1}.final.s3 .fn.c{opacity:1}
-.final .fe{stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 3s ease-out}
-.final.s2 .fe.gm{stroke-dashoffset:0}.final.s3 .fe.mc{stroke-dashoffset:0}.final.s3 .fe.cs{stroke-dashoffset:0;transition-delay:1.4s}
+.final .hz{opacity:.25;transition:opacity 4s}.final.s-go .hz{opacity:1}
 .final .stars circle{animation:tw 3s ease-in-out infinite alternate}
 @keyframes tw{to{opacity:.3}}
 @media (max-width:900px){.hero{grid-template-columns:1fr}.steps{grid-template-columns:repeat(2,minmax(0,1fr))}.brief{grid-template-columns:1fr}.mcols{grid-template-columns:repeat(2,minmax(0,1fr))}}
@@ -254,7 +258,7 @@ details.sec .in{padding:18px 20px;display:grid;gap:14px}
   table{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding-block:10px;border-bottom:1px solid var(--line)}.stack td{display:flow-root;border:0;padding:3px 0;padding-inline-start:8em;text-align:start}.stack td::before{content:attr(data-l);float:inline-start;width:7.5em;margin-inline-start:-8em;color:var(--soft)}.stack td:empty{display:none}}
 @media (max-height:560px) and (orientation:landscape){.screen{place-items:start center}.dest{min-height:0;padding:14px}.opt{min-height:62px}.mcard{min-height:0}}
 .rm *, .rm *::before, .rm *::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
-.rm .final .fin-t,.rm .final .fin-t p,.rm .final .fn,.rm .final .fnet,.rm .final .aur,.rm .final .nl{transition-duration:.6s!important}
+.rm .final .fin-t,.rm .final .fin-t p,.rm .final .radar,.rm .final .rn,.rm .final .core,.rm .final .aur,.rm .final .nl{transition-duration:.6s!important}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 </style>
 <script>new MutationObserver(()=>{for(const c of document.querySelectorAll('.stack td:not([data-l])')){let i=0,p=c;while(p=p.previousElementSibling)i+=p.colSpan;c.dataset.l=c.closest('table').rows[0].cells[i]?.textContent||''}}).observe(document,{childList:true,subtree:true})</script>
@@ -431,7 +435,7 @@ function goHome(){P.screen='welcome';P.ui.fb=null;P.err='';if(view()!=='play')lo
 const ADMIN_PAGES=[['home','Home','home'],['facilitator','Facilitator','users'],['developer','Content editor','edit'],['dashboard','Live dashboard','chart']];
 function adminMenu(){modal({title:'Admin menu',body:`<div style="display:grid;gap:10px">${ADMIN_PAGES.map(([h,l,i])=>h==='home'?`<button class="btn" data-go-home>${icon(i,18)}${l} (first page)</button>`:`<a class="btn ${h===view()?'primary':''}" href="#${h}">${icon(i,18)}${l}</a>`).join('')}</div>`,actions:[{label:'Log out',cls:'warn',fn:()=>logout()},{label:'Close',cls:'ghost'}]});const b=$('#modal [data-go-home]');if(b)b.onclick=()=>{closeModal();goHome()}}
 function renderLogin(next){
-  $('#app').innerHTML=`<header class="bar"><button class="brand" data-act="home" style="background:none;border:0;cursor:pointer;min-height:44px">${icon('ship',24)}<span>Sail with Purpose</span></button><div class="grow"></div><button class="btn small ghost" data-act="home">${icon('home',18)}Home</button></header>
+  $('#app').innerHTML=`<header class="bar"><button class="brand" data-act="home" style="background:none;border:0;cursor:pointer;min-height:44px">${icon('ship',24)}<span>Mission Voyage 2027</span></button><div class="grow"></div><button class="btn small ghost" data-act="home">${icon('home',18)}Home</button></header>
   <main class="screen"><form id="loginform" class="card narrow stack wrap" style="padding:clamp(24px,3vw,40px)" novalidate><span style="color:var(--cyan)">${icon('lock',40)}</span><h1>Admin login</h1><p class="muted">For facilitators and the content team. Enter the admin ${S.backend==='firebase'?'email and password':'password'} to manage missions, questions, the live dashboard and the event.</p>
   ${S.backend==='firebase'?`<div class="field"><label for="em">Admin email</label><input class="input" id="em" type="email" autocomplete="username" inputmode="email"></div>`:''}
   <div class="field"><label for="pw">Password</label><input class="input" id="pw" type="password" autocomplete="current-password" aria-describedby="pwerr"><div id="pwerr" aria-live="polite"></div></div>
@@ -552,12 +556,14 @@ function chrome(){
   if(view()!=='play')return;
   const st=$('#st');if(st)st.innerHTML=statusChip();
   const tm=$('#tm');if(tm)tm.textContent=timerText();
+  const rb=$('#retrybtn[data-until]');if(rb){const left=+rb.dataset.until-now();if(left<=0){rb.removeAttribute('data-until');rb.disabled=false;rb.textContent='Try again';rb.focus()}else rb.querySelector('span').textContent='Try again in '+Math.ceil(left/1000)+'s'}
+  const sb=$('#submitbtn[data-until]');if(sb){const left=+sb.dataset.until-now();if(left<=0){sb.removeAttribute('data-until');sb.disabled=!P.ui.sel;sb.textContent='Lock in our answer'}else sb.textContent='Wait '+Math.ceil(left/1000)+'s to answer again'}
   const sq=$('#startq[data-until]');if(sq){const left=+sq.dataset.until-now();if(left<=0){sq.removeAttribute('data-until');sq.disabled=false;sq.innerHTML=`${P.ui.fromQ?'Return to the question':'Start Mission Questions'} ${icon('arrow',20)}`;sq.nextElementSibling?.remove();sq.focus()}else sq.querySelector('span').textContent='Questions unlock in '+fmtClock(left)}
 }
 function playerBar(){
   const g=P.g,showMap=g&&!['map','welcome','register','aboard','instructions','removed','resume'].includes(P.screen);
   const e=g?evalGroup(g):null;
-  return`<header class="bar"><button class="brand" data-act="home" aria-label="Home" style="background:none;border:0;cursor:pointer;min-height:44px">${icon('ship',24)}<span>Sail with Purpose</span></button>
+  return`<header class="bar"><button class="brand" data-act="home" aria-label="Home" style="background:none;border:0;cursor:pointer;min-height:44px">${icon('ship',24)}<span>Mission Voyage 2027</span></button>
   ${g?`<div class="who"><b>${esc(gname())}</b><span>Your group</span></div>`:''}
   <div class="grow"></div>
   ${g&&e?`<div class="meter" aria-label="${e.done.length} of ${e.total} Site Missions activated"><i><b style="width:${e.pct}%"></b></i>${e.done.length}/${e.total}</div>`:''}
@@ -643,8 +649,8 @@ function miniNetwork(g){
 const SC={
 welcome(){
   const L=lv();
-  return`<div class="wrap hero"><div class="stack"><p class="tag">${icon('compass',16)}Site Mission 2027</p><h1>SAIL WITH<span>PURPOSE</span></h1><p class="motto">Ready, Rise, Win</p>
-  <p class="lead">A group voyage to activate Site Mission 2027. Play together on one device, complete all four destinations, and help launch the ship.</p>
+  return`<div class="wrap hero"><div class="stack"><p class="tag">${icon('compass',16)}ASC 2027</p><h1>SAIL WITH<span>PURPOSE</span></h1><p class="motto">Ready, Rise, Win</p>
+  <p class="lead">A group voyage to activate ASC 2027. Play together on one device, complete all four destinations, and help launch the ship.</p>
   ${P.g?`<div class="row"><button class="btn primary" data-act="cont">Continue the journey ${icon('arrow',20)}</button><span class="muted">Playing as <b style="color:var(--ink)">${esc(gname())}</b></span></div>`:`<div class="row">${L.registrationOpen?`<button class="btn primary" data-act="go" data-arg="register">Register your group ${icon('arrow',20)}</button>`:`<span class="tag">${icon('lock',16)}Registration is closed</span>`}
   <button class="link" data-act="go" data-arg="resume">Already registered? Continue your journey</button></div>`}
   ${S.mode==='local'?`<p class="tiny">Rehearsal mode: progress is stored in this browser only.</p>`:''}${S.mode==='live'&&S.canWrite===false?`<p class="err">${icon('alert',16)}This device has view-only access to the event, so it cannot save progress. Ask a facilitator for access.</p>`:''}</div>
@@ -716,14 +722,17 @@ question(){
   const q=P.ui.fb==='right'?qs.find(x=>x.id===P.ui.q):qs[idx];const qi=qs.indexOf(q);
   const att=g.attempts?.[q.id]||0;
   const doShuffle=lg.shuffleAnswers&&q.shuffle!==false;
-  const opts=doShuffle?shuffle(q.options||[],g.groupId+q.id+(lg.shuffleOnRetry?att:0)):(q.options||[]);
+  const base=q.options||[],ord=n=>shuffle(base,g.groupId+q.id+n);let opts=base;
+  if(doShuffle){const n=lg.shuffleOnRetry?(P.ui.fb?Math.max(0,att-1):att):0;opts=ord(n);
+    /* after Try again, never repeat the previous order, so the old wrong pick can't be spotted by position */
+    if(lg.shuffleOnRetry&&n>0&&base.length>1){const prev=ord(n-1);if(prev.every((o,i)=>o.id===opts[i].id))opts=opts.slice(1).concat(opts.slice(0,1))}}
   const col=safeColor(m.color);
   let foot;
   if(P.ui.fb==='wrong'){const showHint=q.hint&&att>=(+lg.hintThreshold||2),stuck=+lg.maxAttempts>0&&att>=+lg.maxAttempts;
-    foot=`<div class="fb wrong" role="status"><h3>${icon('compass',26)}Not quite yet.</h3><p>Revisit the mission or try a different perspective.</p>${showHint?`<p class="hint"><b>Hint:</b> ${esc(q.hint)}</p>`:''}${stuck?`<p class="row">${icon('hand',20)}<span>Need a hand? Raise your hand and a facilitator will come over.</span></p>`:''}<div class="row"><button class="btn primary" data-act="retry">Try again</button><button class="btn" data-act="review">${icon('book',18)}Review Mission Brief</button></div></div>`}
+    foot=`<div class="fb wrong" role="status"><h3>${icon('compass',26)}Not quite yet.</h3><p>Revisit the mission or try a different perspective.</p>${showHint?`<p class="hint"><b>Hint:</b> ${esc(q.hint)}</p>`:''}${stuck?`<p class="row">${icon('hand',20)}<span>Need a hand? Raise your hand and a facilitator will come over.</span></p>`:''}<div class="row"><button class="btn primary" data-act="retry" ${now()<(P.ui.waitUntil||0)?`id="retrybtn" data-until="${P.ui.waitUntil}" disabled`:""}>${now()<(P.ui.waitUntil||0)?`${icon("clock",20)}<span>Try again in ${Math.ceil((P.ui.waitUntil-now())/1000)}s</span>`:"Try again"}</button><button class="btn" data-act="review">${icon('book',18)}Review Mission Brief</button></div></div>`}
   else if(P.ui.fb==='right'){const last=qs.every(x=>CT.ok(x,g.solved?.[x.id]));
     foot=`<div class="fb right" role="status"><h3>${icon('check',28)}Correct.</h3><p style="font-size:18px">Your decision supports <b>${esc(m.title)}</b>${q.explanation?` by ${esc(q.explanation)}`:'.'}</p><div class="row"><button class="btn primary" data-act="nextq">${last?'Activate the mission':'Next question'} ${icon('arrow',20)}</button></div></div>`}
-  else foot=`<div class="row"><button class="btn primary" data-act="submit" ${P.ui.sel?'':'disabled'}>Lock in our answer</button><button class="btn ghost" data-act="review">${icon('book',18)}Review Mission Brief</button></div>`;
+  else foot=`<div class="row">${now()<(P.ui.waitUntil||0)?`<button class="btn primary" data-act="submit" id="submitbtn" data-until="${P.ui.waitUntil}" disabled>Wait ${Math.ceil((P.ui.waitUntil-now())/1000)}s to answer again</button>`:`<button class="btn primary" data-act="submit" ${P.ui.sel?'':'disabled'}>Lock in our answer</button>`}<button class="btn ghost" data-act="review">${icon('book',18)}Review Mission Brief</button></div>`;
   const locked=!!P.ui.fb;
   return`<div class="wrap qwrap"><div class="qhead"><div class="crumb"><span style="color:${col}">${icon(m.icon,20)}</span><b style="color:var(--ink)">${esc(m.title)}</b></div><div class="row"><span class="tag">Question ${qi+1} of ${qs.length}</span><span class="pdots" aria-hidden="true">${qs.map(x=>`<i class="${CT.ok(x,g.solved?.[x.id])?'on':''}"></i>`).join('')}</span></div></div>
   <p class="qtext" id="qt">${esc(q.text)}</p>
@@ -790,14 +799,14 @@ const ACT={
   mission(mid){P.ui={mid,viewCat:P.ui.viewCat};const g=P.g;if(!g.briefOpened?.[mid]||!g.briefOpenedAt?.[mid]||g.currentMission!==mid)commit(x=>{x.briefOpened[mid]=true;x.briefOpenedAt=x.briefOpenedAt||{};x.briefOpenedAt[mid]=x.briefOpenedAt[mid]||now();x.currentMission=mid});P.screen='brief';renderPlay()},
   startq(){const m=CT.mission(P.ui.mid);if(m&&briefLeft(m)>0)return toast('Please finish reading the brief first.');P.ui.fromQ=false;P.screen='question';renderPlay()},
   review(){P.ui.fromQ=true;P.ui.fb=null;P.ui.sel=null;P.screen='brief';renderPlay()},
-  sel(id){if(P.ui.fb)return;P.ui.sel=id;$$('.opt').forEach(b=>b.setAttribute('aria-checked',String(b.dataset.arg===id)));const s=$('[data-act=submit]');if(s)s.disabled=false},
+  sel(id){if(P.ui.fb)return;P.ui.sel=id;$$('.opt').forEach(b=>b.setAttribute('aria-checked',String(b.dataset.arg===id)));const s=$('[data-act=submit]');if(s&&!s.dataset.until)s.disabled=false},
   submit(){
     const m=CT.mission(P.ui.mid),qs=CT.qs(m.id),q=qs.find(x=>!CT.ok(x,P.g.solved?.[x.id]));if(!q||!P.ui.sel)return;
-    const opt=P.ui.sel,ok=CT.ok(q,opt);
+    if(now()<(P.ui.waitUntil||0))return;const opt=P.ui.sel,ok=CT.ok(q,opt);
     commit(g=>{const n=(g.attempts[q.id]||0)+1;g.attempts[q.id]=n;g.log.push({q:q.id,o:opt,c:ok,n,t:now()});if(g.log.length>240)g.log=g.log.slice(-240);if(ok)g.solved[q.id]=opt;g.currentMission=m.id});
-    P.ui.fb=ok?'right':'wrong';P.ui.q=q.id;renderPlay();
+    P.ui.fb=ok?'right':'wrong';P.ui.q=q.id;if(!ok){P.ui.waitUntil=now()+5000;setTimeout(chrome,5050)}renderPlay();
   },
-  retry(){P.ui.fb=null;P.ui.sel=null;renderPlay()},
+  retry(){if(now()<(P.ui.waitUntil||0))return;P.ui.fb=null;P.ui.sel=null;renderPlay()},
   nextq(){P.ui.fb=null;P.ui.sel=null;P.ui.q=null;const m=CT.mission(P.ui.mid);const left=CT.qs(m.id).some(x=>!CT.ok(x,P.g.solved?.[x.id]));P.screen=left?'question':'missionDone';renderPlay()},
   home(){goHome()},
   backgame(){if(P.screen==='welcome'||P.screen==='removed')P.screen=resumeScreen();location.hash='play'},
@@ -827,7 +836,7 @@ function onGroups(){const v=view();if(v==='dashboard')schedDash();else if(v==='f
 function schedDash(){if(D.pending)return;D.pending=true;const wait=Math.max(0,700-(now()-D.lastDraw));setTimeout(()=>{D.pending=false;D.lastDraw=now();drawDash()},wait)}
 function renderDash(){
   watchGroups();const d=ev().dashboard;D.tab=D.tab||d.view||'groups';
-  $('#app').innerHTML=`<div class="dash" id="dash"><div class="dhead"><button class="brand" data-act="home" aria-label="Home" style="font-size:18px;background:none;border:0;cursor:pointer;min-height:44px">${icon('ship',28)}<span>Sail with Purpose</span></button><h1 style="flex:1">Site Mission 2027 · Live voyage</h1>
+  $('#app').innerHTML=`<div class="dash" id="dash"><div class="dhead"><button class="brand" data-act="home" aria-label="Home" style="font-size:18px;background:none;border:0;cursor:pointer;min-height:44px">${icon('ship',28)}<span>Mission Voyage 2027</span></button><h1 style="flex:1">Site Mission 2027 · Live voyage</h1>
   <div class="tabs" role="tablist">${[['groups','Groups'],['missions','Missions'],['network','Network']].map(([k,l])=>`<button role="tab" aria-selected="${D.tab===k}" data-dt="${k}">${l}</button>`).join('')}</div>
   <button class="btn small ghost" id="dfs">${icon('expand',18)}Full screen</button>${AUTH.ok()?`<button class="btn small ghost" data-act="amenu">${icon('menu',18)}Admin menu</button>`:P.g?`<button class="btn small primary" data-act="backgame">${icon('back',18)}Back to our game</button>`:`<button class="btn small ghost" data-act="home">${icon('home',18)}Home</button>`}<span class="chip" id="dst"></span></div>
   <div class="stats" id="dstats"></div><div class="dbody" id="dbody"></div></div>`;
@@ -906,7 +915,7 @@ function drawNetwork(body,A){
    FACILITATOR
    ====================================================================== */
 const F={filter:'all',q:'',pending:false};
-function adminNav(cur){return`<header class="bar"><button class="brand" data-act="home" aria-label="Home" style="background:none;border:0;cursor:pointer;min-height:44px">${icon('ship',24)}<span>Sail with Purpose · Admin</span></button><nav class="adminnav" aria-label="Admin pages">${ADMIN_PAGES.map(([h,l,i])=>h==='home'?`<button class="link" style="text-decoration:none;color:var(--soft);font-weight:600;display:inline-flex;gap:6px;align-items:center" data-act="home">${icon(i,16)}${l}</button>`:`<a href="#${h}" ${cur===h?'aria-current="page"':''} style="gap:6px">${icon(i,16)}${l}</a>`).join('')}</nav><div class="grow"></div>${S.mode==='local'?`<span class="tag ph">Rehearsal mode · this browser only</span>`:`<span class="chip"><span class="dot"></span>Live database</span>`}<button class="btn small ghost" data-act="logout">${icon('logout',18)}Log out</button></header>${S.mode==='live'&&!S.admin?`<div class="console" style="padding-bottom:0"><p class="hint">${icon('alert',16)} You are logged in, but this account cannot save changes to the event database.</p></div>`:''}`}
+function adminNav(cur){return`<header class="bar"><button class="brand" data-act="home" aria-label="Home" style="background:none;border:0;cursor:pointer;min-height:44px">${icon('ship',24)}<span>Mission Voyage 2027 · Admin</span></button><nav class="adminnav" aria-label="Admin pages">${ADMIN_PAGES.map(([h,l,i])=>h==='home'?`<button class="link" style="text-decoration:none;color:var(--soft);font-weight:600;display:inline-flex;gap:6px;align-items:center" data-act="home">${icon(i,16)}${l}</button>`:`<a href="#${h}" ${cur===h?'aria-current="page"':''} style="gap:6px">${icon(i,16)}${l}</a>`).join('')}</nav><div class="grow"></div>${S.mode==='local'?`<span class="tag ph">Rehearsal mode · this browser only</span>`:`<span class="chip"><span class="dot"></span>Live database</span>`}<button class="btn small ghost" data-act="logout">${icon('logout',18)}Log out</button></header>${S.mode==='live'&&!S.admin?`<div class="console" style="padding-bottom:0"><p class="hint">${icon('alert',16)} You are logged in, but this account cannot save changes to the event database.</p></div>`:''}`}
 function schedFac(){if(F.pending)return;F.pending=true;setTimeout(()=>{F.pending=false;if(view()==='facilitator'&&!$('#modal:not([hidden])'))drawFac()},600)}
 function renderFac(){watchGroups();watchKeys();$('#app').innerHTML=adminNav('facilitator')+`<main class="console" id="fac"></main>`;drawFac()}
 function drawFac(){
@@ -1140,53 +1149,60 @@ Object.assign(ADM,{
    ====================================================================== */
 const FIN={timers:[],playing:false};
 function finalMarkup(){
-  const A=aggregate();const ng=Math.min(Math.max(A.N,P.g?1:0,8),70);const r=seeded('fin');
-  let stars='';for(let i=0;i<120;i++)stars+=`<circle cx="${(r()*1600).toFixed(0)}" cy="${(r()*520).toFixed(0)}" r="${(r()*1.6+.3).toFixed(1)}" fill="#fff" opacity="${(r()*.7+.2).toFixed(2)}" style="animation-delay:${(r()*3).toFixed(1)}s"/>`;
-  const cats=CT.cats(),ms=CT.all();
-  const gp=Array.from({length:ng},(_,i)=>({x:120+i*(1360/Math.max(ng-1,1)),y:120+Math.sin(i*.9)*26}));
-  const mp=ms.map((m,i)=>({x:200+i*(1200/Math.max(ms.length-1,1)),y:300,col:safeColor(m.color),m}));
-  const cp=cats.map((c,i)=>({x:380+i*280,y:420,col:safeColor(c.color),c}));
-  const ship={x:470,y:500},tgt={x:620,y:470};
-  let edges='',nodes='';
-  gp.forEach((g,i)=>{const pick=ng<=20?mp:[mp[i%mp.length],mp[(i+4)%mp.length],mp[(i+8)%mp.length]].filter(Boolean);pick.forEach(m=>{edges+=`<path class="fe gm" pathLength="1" d="M${g.x} ${g.y}Q${(g.x+m.x)/2} ${g.y+90} ${m.x} ${m.y}" stroke="${m.col}" stroke-width="1" opacity=".45" fill="none"/>`})});
-  mp.forEach((m,i)=>{const c=cp.find(x=>x.c.id===m.m.categoryId)||cp[0];edges+=`<path class="fe mc" pathLength="1" d="M${m.x} ${m.y}L${c.x} ${c.y}" stroke="${m.col}" stroke-width="2" opacity=".8" fill="none"/>`});
-  cp.forEach(c=>{edges+=`<path class="fe cs" pathLength="1" d="M${c.x} ${c.y}Q${(c.x+tgt.x)/2} ${Math.max(c.y,tgt.y)+60} ${tgt.x} ${tgt.y}" stroke="${c.col}" stroke-width="3.5" opacity=".95" fill="none" filter="url(#fglow)"/>`});
-  gp.forEach(g=>nodes+=`<circle class="fn g" cx="${g.x}" cy="${g.y}" r="6" fill="#41f2a5" filter="url(#fglow)"/>`);
-  mp.forEach(m=>nodes+=`<circle class="fn m" cx="${m.x}" cy="${m.y}" r="15" fill="${m.col}" filter="url(#fglow)"/><text class="fn m" x="${m.x}" y="${m.y+4}" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-weight="700" font-size="11" fill="#03122b">${esc(m.m.code||'')}</text>`);
-  cp.forEach(c=>nodes+=`<circle class="fn c" cx="${c.x}" cy="${c.y}" r="24" fill="${c.col}" filter="url(#fglow)"/><text class="fn c" x="${c.x}" y="${c.y+7}" text-anchor="middle" font-family="Sora, Inter, system-ui, sans-serif" font-weight="800" font-size="20" fill="#03122b">${esc(c.c.code)}</text>`);
+  const A=aggregate();const ng=Math.min(Math.max(A.N,50),70);const r=seeded('fin');
+  let stars='';for(let i=0;i<120;i++)stars+=`<circle cx="${(r()*1600).toFixed(0)}" cy="${(r()*560).toFixed(0)}" r="${(r()*1.6+.3).toFixed(1)}" fill="#fff" opacity="${(r()*.7+.2).toFixed(2)}" style="animation-delay:${(r()*3).toFixed(1)}s"/>`;
+  const cats=CT.cats().length?CT.cats():['E','P','I','C'].map((c,i)=>({code:c,color:['#33e6f2','#41f2a5','#9479ff','#ff52b9'][i]}));
+  const cx=800,cy=470,R1=150,R2=260,R3=385;const ang=[-135,-45,45,135].map(a=>a*Math.PI/180);
+  const nodes=cats.slice(0,4).map((c,i)=>({x:cx+Math.cos(ang[i])*R2,y:cy+Math.sin(ang[i])*R2,col:safeColor(c.color),code:c.code,a:ang[i]}));
+  let rings='';[R1,R2,R3].forEach((rr,i)=>rings+=`<circle cx="${cx}" cy="${cy}" r="${rr}" fill="none" stroke="#33e6f2" stroke-opacity="${.32-i*.07}" stroke-width="1.5" ${i===2?'stroke-dasharray="4 8"':''}/>`);
+  rings+=`<line x1="${cx-R3}" y1="${cy}" x2="${cx+R3}" y2="${cy}" stroke="#33e6f2" stroke-opacity=".12"/><line x1="${cx}" y1="${cy-R3}" x2="${cx}" y2="${cy+R3}" stroke="#33e6f2" stroke-opacity=".12"/>`;
+  const sweep=`<g class="sweep"><path d="M${cx} ${cy}L${cx+R3} ${cy}A${R3} ${R3} 0 0 0 ${(cx+Math.cos(-0.6)*R3).toFixed(1)} ${(cy+Math.sin(-0.6)*R3).toFixed(1)}Z" fill="url(#fsw)"/><line x1="${cx}" y1="${cy}" x2="${cx+R3}" y2="${cy}" stroke="#9ff6ff" stroke-width="2" stroke-opacity=".8"/>${reduced?'':`<animateTransform attributeName="transform" type="rotate" from="0 ${cx} ${cy}" to="360 ${cx} ${cy}" dur="3.2s" repeatCount="indefinite"/>`}</g>`;
+  let groups='';
+  for(let i=0;i<ng;i++){const a=-Math.PI/2+i/ng*Math.PI*2,x=cx+Math.cos(a)*R3,y=cy+Math.sin(a)*R3;
+    const k=nodes.reduce((b,n,j)=>{const d=Math.hypot(n.x-x,n.y-y);return d<b.d?{d,j}:b},{d:1e9,j:0}).j,n=nodes[k];
+    groups+=`<path class="rgl" pathLength="1" d="M${x.toFixed(1)} ${y.toFixed(1)}L${n.x.toFixed(1)} ${n.y.toFixed(1)}" stroke="${n.col}" stroke-width="1.2" stroke-opacity=".55" style="transition-delay:${(i*25)}ms"/><g class="rg" transform="translate(${x.toFixed(1)} ${y.toFixed(1)})" style="transition-delay:${(i*30)}ms"><use href="#miniship"/></g>`}
+  let epic='';nodes.forEach((n,i)=>{epic+=`<path class="rb rb${i}" pathLength="1" d="M${n.x.toFixed(1)} ${n.y.toFixed(1)}L${cx} ${cy}" stroke="${n.col}" stroke-width="5" filter="url(#fglow)"/>`});
+  nodes.forEach((n,i)=>{epic+=`<g class="rn rn${i}"><circle class="halo" cx="${n.x}" cy="${n.y}" r="44" fill="${n.col}" opacity=".25" filter="url(#fblur2)"/><circle cx="${n.x}" cy="${n.y}" r="30" fill="${n.col}" stroke="#fff" stroke-width="2"/><text x="${n.x}" y="${n.y+10}" text-anchor="middle" font-family="Sora, Inter, sans-serif" font-weight="800" font-size="28" fill="#03122b">${esc(n.code)}</text></g>`});
+  const shipX=635,shipY=600;
   return`<svg class="fs" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs>
-   <linearGradient id="fsky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#01061a"/><stop offset=".55" stop-color="#0a1f4a"/><stop offset="1" stop-color="#1b4c88"/></linearGradient>
+   <linearGradient id="fsky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#01061a"/><stop offset=".6" stop-color="#0a1f4a"/><stop offset="1" stop-color="#1b4c88"/></linearGradient>
    <linearGradient id="fsea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0e3770"/><stop offset="1" stop-color="#010818"/></linearGradient>
    <linearGradient id="fa1" x1="0" x2="1"><stop offset="0" stop-color="#41f2a5" stop-opacity="0"/><stop offset=".3" stop-color="#41f2a5"/><stop offset=".65" stop-color="#33e6f2"/><stop offset="1" stop-color="#9479ff" stop-opacity="0"/></linearGradient>
    <linearGradient id="fa2" x1="0" x2="1"><stop offset="0" stop-color="#9479ff" stop-opacity="0"/><stop offset=".45" stop-color="#ff52b9" stop-opacity=".85"/><stop offset=".8" stop-color="#9479ff"/><stop offset="1" stop-color="#9479ff" stop-opacity="0"/></linearGradient>
    <radialGradient id="fhz"><stop offset="0" stop-color="#fff"/><stop offset=".25" stop-color="#d9fbff" stop-opacity=".8"/><stop offset="1" stop-color="#33e6f2" stop-opacity="0"/></radialGradient>
+   <radialGradient id="fcore"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset=".4" stop-color="#9ff6ff" stop-opacity=".45"/><stop offset="1" stop-color="#33e6f2" stop-opacity="0"/></radialGradient>
+   <radialGradient id="fsw" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(${cx} ${cy}) scale(${R3})"><stop offset="0" stop-color="#33e6f2" stop-opacity=".05"/><stop offset="1" stop-color="#33e6f2" stop-opacity=".35"/></radialGradient>
+   <g id="miniship"><circle r="15" fill="#41f2a5" opacity=".16"/><path d="M-12 3H12L8 9H-8Z" fill="#0b2c5c" stroke="#41f2a5" stroke-width="1.6" stroke-linejoin="round"/><line x1="0" y1="3" x2="0" y2="-14" stroke="#e8f4ff" stroke-width="1.6"/><path d="M1.5 -13L10 1.5H1.5Z" fill="#e6fbff"/><path d="M-1.5 -11Q-8 -5 -9 1.5H-1.5Z" fill="#a6f4ff"/></g>
    <linearGradient id="fsail" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#a6f4ff"/></linearGradient>
-   <filter id="fblur"><feGaussianBlur stdDeviation="26"/></filter><filter id="fglow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+   <filter id="fblur"><feGaussianBlur stdDeviation="26"/></filter><filter id="fblur2" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="10"/></filter><filter id="fglow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
    <rect width="1600" height="900" fill="url(#fsky)"/><g class="stars">${stars}</g>
    <g class="aur" filter="url(#fblur)"><path d="M-120 250C180 110 480 330 800 190S1400 70 1720 210V320C1400 190 1100 420 800 300S180 230 -120 370Z" fill="url(#fa1)"/><path d="M-60 130C260 40 520 200 860 110S1420 40 1700 120V170C1400 110 1120 250 860 190S260 110 -60 220Z" fill="url(#fa2)"/></g>
-   <ellipse class="hz" cx="1300" cy="590" rx="460" ry="90" fill="url(#fhz)"/>
-   <rect y="590" width="1600" height="310" fill="url(#fsea)"/>
-   <g class="aur" opacity=".35" filter="url(#fblur)" transform="translate(0 1180) scale(1 -1)"><path d="M-120 250C180 110 480 330 800 190S1400 70 1720 210V320C1400 190 1100 420 800 300S180 230 -120 370Z" fill="url(#fa1)"/></g>
-   <g stroke="#9ff6ff" stroke-opacity=".22" stroke-width="2">${Array.from({length:9},(_,i)=>`<path d="M${(i*173)%1400} ${612+i*30}h${140+i*18}"/>`).join('')}</g>
-   <g><rect x="0" y="606" width="330" height="16" fill="#0a1d42"/>${[30,90,150,210,270].map(x=>`<rect x="${x}" y="622" width="8" height="40" fill="#081733"/>`).join('')}<path d="M70 606L80 470H104L114 606Z" fill="#0c2450" stroke="#33e6f2" stroke-width="1.5"/><rect x="78" y="452" width="28" height="20" fill="#fff3c4" class="nl"/><path class="beam" d="M106 462L420 420V505Z" fill="#fff3c4"/></g>
-   <g class="fnet">${edges}${nodes}</g>
-   <g class="shipmove"><g transform="translate(${ship.x} ${ship.y+96})">
+   <ellipse class="hz" cx="1300" cy="600" rx="460" ry="90" fill="url(#fhz)"/>
+   <rect y="600" width="1600" height="300" fill="url(#fsea)"/>
+   <g class="aur" opacity=".35" filter="url(#fblur)" transform="translate(0 1200) scale(1 -1)"><path d="M-120 250C180 110 480 330 800 190S1400 70 1720 210V320C1400 190 1100 420 800 300S180 230 -120 370Z" fill="url(#fa1)"/></g>
+   <g stroke="#9ff6ff" stroke-opacity=".2" stroke-width="2">${Array.from({length:9},(_,i)=>`<path d="M${(i*173)%1400} ${622+i*30}h${140+i*18}"/>`).join('')}</g>
+   <g class="radar">${rings}${sweep}${groups}${epic}<circle class="core" cx="${cx}" cy="${cy}" r="${R1}" fill="url(#fcore)"/></g>
+   <g class="shipmove"><g transform="translate(${shipX} ${shipY})">
     <path class="wake" d="M0 8C-90 16-220 10-360 22M10 16C-80 28-200 30-300 40" stroke="#c9fbff" stroke-width="3" fill="none"/>
     <path d="M-10 -24H340L306 20H22Z" fill="#081a3a" stroke="#33e6f2" stroke-width="2.5"/><path d="M40 -24H300" stroke="#41f2a5" stroke-width="2" opacity=".7"/>
     <path d="M212 -24V-60H272L294 -24Z" fill="#11295a" stroke="#33e6f2" stroke-width="1.5"/>${[222,240,258].map(x=>`<rect class="win" x="${x}" y="-52" width="12" height="9" rx="2"/>`).join('')}
     <line x1="150" y1="-24" x2="150" y2="-270" stroke="#e8f4ff" stroke-width="5"/>
     <path class="sail" d="M144 -258Q66 -150 54 -34H144Z" fill="url(#fsail)"/><path class="sail" d="M158 -252L318 -34H158Z" fill="url(#fsail)" opacity=".92"/>
     <circle class="nl" cx="150" cy="-280" r="7" fill="#fff" filter="url(#fglow)"/><circle class="nl" cx="330" cy="-12" r="6" fill="#41f2a5" filter="url(#fglow)"/><circle class="nl" cx="6" cy="-12" r="6" fill="#ff5d6c" filter="url(#fglow)"/></g></g></svg>
-  <div class="fin-t"><h1>SITE MISSION 2027 ACTIVATED</h1><p>Ready. Rise. Win.<br>We Sail with Purpose.</p></div>
+  <div class="fin-t"><h1>Site Mission 2027 Activated</h1><p class="l1">ASC 2027</p><p class="l2">Ready. Rise. Win</p></div>
   <p class="fin-cap" id="fcap" aria-live="polite"></p>
   <div class="fin-ctl"><button class="btn small" id="frep">${icon('refresh',18)}Replay</button><button class="btn small" id="ffs">${icon('expand',18)}Full screen</button><button class="btn small" id="fx">${icon('x',18)}Close</button></div>`;
 }
 function playFinal(){
   const el=$('#final');FIN.timers.forEach(clearTimeout);FIN.timers=[];
   el.className='final';el.innerHTML=finalMarkup();el.hidden=false;
-  const steps=[[0,'The complete mission network lights up.'],[3200,'Aurora energy flows from every group to the twelve Site Missions.'],[7000,'E, P, I and C channel the energy toward the ship.'],[10500,'The ship\'s navigation lights turn on.'],[12500,'The sails unfurl.'],[15000,'The ship moves out of the harbor.'],[19000,'It begins sailing toward a bright horizon.'],[21000,'Aurora lights spread across the sky and water.'],[26000,'Site Mission 2027 activated. Ready. Rise. Win. We sail with purpose.']];
+  const cs=(CT.cats().length?CT.cats():[{code:'E'},{code:'P'},{code:'I'},{code:'C'}]).slice(0,4).map(c=>c.code);
+  const steps=[['s-radar',0,'The radar scans for every team\'s contribution.'],['s-groups',2500,'Every team\'s energy flows to '+cs.join(', ')+'.'],
+    ['c1',5000,cs[0]+' connected to the ship.'],['c2',6500,cs[1]+' connected to the ship.'],['c3',8000,cs[2]+' connected to the ship.'],['c4',9500,cs[3]+' connected to the ship.'],
+    ['s-power',11000,'All four connected. The ship powers up.'],['s-sail',12500,'The sails unfurl.'],['s-go',14500,'The ship sets sail toward the horizon.'],['s-aurora',17500,'Aurora lights fill the sky and the sea.'],
+    ['s-end',22500,'Site Mission 2027 Activated. ASC 2027. Ready. Rise. Win']];
   const k=reduced?.45:1;
-  steps.forEach(([t,cap],i)=>FIN.timers.push(setTimeout(()=>{el.classList.add('s'+(i+1));const c=$('#fcap');if(c)c.textContent=cap},t*k+60)));
+  steps.forEach(([cls,t,cap])=>FIN.timers.push(setTimeout(()=>{el.classList.add(cls);const c=$('#fcap');if(c)c.textContent=cap},t*k+60)));
   $('#frep').onclick=()=>playFinal();
   $('#ffs').onclick=()=>{(document.fullscreenElement?document.exitFullscreen():el.requestFullscreen?.())?.catch?.(()=>toast('Full screen is not available here.'))};
   $('#fx').onclick=()=>{FIN.timers.forEach(clearTimeout);el.hidden=true;el.innerHTML='';if(document.fullscreenElement)document.exitFullscreen().catch(()=>{})};
