@@ -103,6 +103,7 @@ textarea.input{min-height:90px;resize:vertical;line-height:1.45}
 .mcard{display:grid;gap:10px;align-content:start;padding:22px;text-align:left;border-radius:20px;border:1.5px solid var(--line);background:rgba(8,26,58,.92);cursor:pointer;min-height:200px;transition:transform .2s,border-color .2s}
 .mcard:hover{transform:translateY(-2px);border-color:var(--cyan)}
 .mcard .mi{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;background:rgba(255,255,255,.06)}
+.mcard.locked{opacity:.55;border-style:dashed;cursor:not-allowed}.mcard.locked:hover{transform:none;border-color:var(--line)}.mcard.current{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(51,230,242,.18)}
 .mcard.done{border-color:var(--green);background:linear-gradient(180deg,rgba(65,242,165,.10),rgba(8,26,58,.92))}
 .pdots{display:flex;gap:6px}.pdots i{width:22px;height:6px;border-radius:9px;background:rgba(255,255,255,.14)}.pdots i.on{background:var(--green)}
 .crumb{display:flex;align-items:center;gap:10px;flex-wrap:wrap;color:var(--soft);font-size:14px}
@@ -197,6 +198,16 @@ details.sec .in{padding:18px 20px;display:grid;gap:14px}
 .gt.s-completed .mk{background:var(--green);border-color:#fff;animation:glow 2.4s ease-in-out infinite}
 .gt.idle .mk{box-shadow:0 0 0 3px var(--amber)}
 @keyframes glow{0%,100%{box-shadow:0 0 6px 1px rgba(65,242,165,.6)}50%{box-shadow:0 0 22px 6px rgba(65,242,165,.75)}}
+.lbwrap{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:16px;padding:16px;max-height:100%;overflow:auto}
+.lb{padding:16px;border-radius:18px;border:1px solid var(--line);background:rgba(8,26,58,.9);align-self:start}
+.lb h3{display:flex;gap:10px;align-items:center;margin-bottom:12px;font-size:18px}.lb h3 .ic{color:var(--cyan)}
+.lbr{display:grid;grid-template-columns:44px minmax(0,1fr) auto 70px;gap:12px;align-items:center;padding:10px 12px;border-radius:14px;border:1px solid var(--line);margin-bottom:8px;background:rgba(5,15,36,.55)}
+.lbr .rk{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-family:var(--disp);font-weight:800;background:rgba(255,255,255,.08)}
+.lbr.top{border-color:var(--m);box-shadow:0 0 24px -10px var(--m)}.lbr.top .rk{background:var(--m);color:#03122b}.lbr.top b{font-size:17px}
+.lbr b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.lbr .lt{display:flex;gap:5px;align-items:center;font-size:13px;color:var(--soft);white-space:nowrap}.lbr .ld{font-family:var(--disp);font-weight:700;text-align:right;font-variant-numeric:tabular-nums}
+.lbs{display:grid;grid-template-columns:minmax(0,1fr) 120px 48px;gap:10px;align-items:center;padding:7px 4px;border-bottom:1px solid rgba(34,64,122,.5);font-size:14px}
+.lbs b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}.lbs i{height:8px;border-radius:9px;background:rgba(255,255,255,.1);overflow:hidden}.lbs i b{display:block;height:100%;background:linear-gradient(90deg,var(--cyan),var(--green))}.lbs span{text-align:right;color:var(--soft);font-variant-numeric:tabular-nums}
+@media(max-width:900px){.lbwrap{grid-template-columns:1fr}}
 .mcols{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;padding:16px;height:100%;align-content:start}
 .mcol h3{display:flex;align-items:center;gap:10px;margin-bottom:10px;font-size:17px}
 .mcol h3 .code{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;color:#03122b;font-weight:800}
@@ -379,7 +390,7 @@ async function fbLogin(email,pw){
 /* ================= global state ================= */
 const S={mode:'connecting',backend:'none',admin:false,canWrite:null,event:null,live:null,content:null,keys:null,eventOk:false,contentOk:false,liveOk:false,online:navigator.onLine,lastUpdate:0,groupsRaw:[],ctrl:{},groupsOk:false,slow:false};
 const DEF_EVENT={eventName:'Sail with Purpose · Site Mission 2027',eventId:'SM2027',startTime:'',endTime:'',maxGroups:80,finalAnimationEnabled:true,
-  logic:{questionsPerMission:3,maxAttempts:0,hintThreshold:2,minBriefSec:30,categoryLocking:true,shuffleAnswers:true,shuffleOnRetry:true,timeoutMin:5,timerVisible:true,durationMin:60,exceptionsCount:true},
+  logic:{questionsPerMission:3,maxAttempts:0,hintThreshold:2,minBriefSec:30,categoryLocking:true,missionLocking:true,shuffleAnswers:true,shuffleOnRetry:true,timeoutMin:5,timerVisible:true,durationMin:60,exceptionsCount:true},
   dashboard:{view:'groups',refreshSec:5,intensity:'normal',labelMode:'name',showPercent:true,rotateSec:0}};
 const DEF_LIVE={status:'live',registrationOpen:true,denominatorLocked:false,finalTrigger:0,finalAt:0,startedAt:0};
 const ev=()=>{const e=S.event||{};return{...DEF_EVENT,...e,logic:{...DEF_EVENT.logic,...(e.logic||{})},dashboard:{...DEF_EVENT.dashboard,...(e.dashboard||{})}}};
@@ -402,7 +413,7 @@ function evalGroup(g){
   const complete=(exc&&ev().logic.exceptionsCount)||(ms.length>0&&done.length===ms.length);
   const started=Object.keys(solved).length>0||!!g.currentCategory||Object.keys(g.attempts||{}).length>0;
   const status=complete?'completed':started?'in_progress':'registered';
-  const idle=status==='in_progress'&&now()-(g.lastActivity||0)>(+ev().logic.timeoutMin||5)*60000;
+  const idle=status==='in_progress'&&now()-Math.max(g.seenAt||0,g.lastActivity||0)>(+ev().logic.timeoutMin||5)*60000;
   return{done,catsDone,total,complete,exc,status,idle,pct:complete?100:Math.round(done.length/total*100)};
 }
 /* merge each group record with facilitator-owned control fields */
@@ -471,19 +482,30 @@ addEventListener('hashchange',()=>{cleanup();closeModal();render()});
    PLAYER
    ====================================================================== */
 const DEVICE='smg:device';
+/* one device per group: the device that last claimed the group keeps it while it is active */
+const DEVICE_ID=(()=>{let d=LS.get('smg:devid');if(!d){d='d'+Math.random().toString(36).slice(2,10)+Date.now().toString(36);LS.set('smg:devid',d)}return d})();
+const LOCK_MS=150000;
+const lastSeen=g=>Math.max(g?.seenAt||0,g?.lastActivity||0);
+function lockedElsewhere(g,c){if(!g||!g.deviceId||g.deviceId===DEVICE_ID)return false;if(evalGroup(g).complete)return false;if(c&&(c.releaseAt||0)>(g.claimAt||0))return false;return now()-lastSeen(g)<LOCK_MS}
+function claimDevice(){if(P.g&&P.g.deviceId!==DEVICE_ID)commit(x=>{x.deviceId=DEVICE_ID;x.claimAt=now();x.seenAt=now()})}
+function heartbeat(){const g=P.g;if(!g||P.elsewhere||S.mode==='connecting'||document.visibilityState!=='visible'||P.saving||P.dirty||g.deviceId!==DEVICE_ID||evalGroup(g).complete)return;
+  g.seenAt=now();backup();Store.update('groups/'+g.groupId,{seenAt:g.seenAt,deviceId:DEVICE_ID}).catch(()=>{})}
+setInterval(heartbeat,60000);
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')heartbeat()});
 const P={g:null,ctrl:null,screen:'welcome',ui:{},unsubG:null,unsubC:null,saving:false,dirty:false,failing:false,denied:false,lastSaved:0,form:{name:'',num:'',table:'',avatar:0},err:'',namesList:null,lastScreen:''};
 const AVATARS=['#33e6f2','#41f2a5','#9479ff','#ff52b9','#4a8dff','#ffbf47'];
 const gname=()=>(P.ctrl&&P.ctrl.name)||P.g?.groupName||'';
 function backup(){if(P.g)LS.set('smg:backup:'+P.g.groupId,P.g)}
 
 function attachGroup(g,pushLocal){
-  P.g=g;LS.set(DEVICE,{groupId:g.groupId});backup();
+  P.g=g;P.elsewhere=false;LS.set(DEVICE,{groupId:g.groupId});backup();
   P.unsubG?.();P.unsubC?.();
   P.unsubG=Store.watch('groups/'+g.groupId,(d,meta)=>{
     S.lastUpdate=now();
     if(!P.g)return;
     if(!d){if(meta&&meta.fromCache===false&&!P.saving&&!P.dirty&&S.mode==='live')markRemoved();return}
     const L=P.g,re=(d.resetEpoch||0),le=(L.resetEpoch||0);
+    if(d.deviceId&&d.deviceId!==DEVICE_ID&&L.deviceId===DEVICE_ID&&(d.rev||0)>=(L.rev||0)&&!evalGroup(d).complete){P.g=d;P.elsewhere=true;P.screen='elsewhere';P.ui={};closeModal();rerender(true);return}
     if(re>le||(re===le&&(d.rev||0)>(L.rev||0))){P.g=d;backup();if(re>le){P.screen='map';P.ui={};toast('A facilitator reset your progress. Start again from the map.')}rerender()}else chrome();
   },()=>{P.failing=true;chrome()});
   P.unsubC=Store.watch('ctrl/'+g.groupId,c=>{
@@ -497,6 +519,7 @@ function attachGroup(g,pushLocal){
 function applyReset(ep){const g=P.g;P.g={...g,currentCategory:null,currentMission:null,completedCategories:[],completedMissions:[],overallProgress:0,solved:{},attempts:{},briefOpened:{},briefOpenedAt:{},log:[],status:'registered',completedAt:null,resetEpoch:ep,rev:(g.rev||0)+1};P.screen='map';P.ui={};backup();queueSave();toast('A facilitator reset your progress. Start again from the map.')}
 function markRemoved(){P.unsubG?.();P.unsubC?.();P.g=null;P.ctrl=null;LS.del(DEVICE);P.screen='removed';rerender(true)}
 function commit(mut){
+  if(P.elsewhere)return evalGroup(P.g);
   const g=clone(P.g);g.solved=g.solved||{};g.attempts=g.attempts||{};g.briefOpened=g.briefOpened||{};g.log=g.log||[];
   mut(g);const e=evalGroup(g);
   if(g.currentCategory&&e.catsDone.includes(g.currentCategory))g.currentCategory=null;
@@ -505,6 +528,7 @@ function commit(mut){
   P.g=g;backup();queueSave();return e;
 }
 async function queueSave(){
+  if(P.elsewhere){P.dirty=false;return}
   P.dirty=true;chrome();if(P.saving)return;P.saving=true;
   while(P.dirty&&P.g){
     P.dirty=false;const snap=P.g;
@@ -528,13 +552,17 @@ async function resumeDevice(){
   let use=g,pushLocal=false;
   if(b&&(!g||((b.resetEpoch||0)>=(g.resetEpoch||0)&&(b.rev||0)>(g.rev||0)))){use=b;pushLocal=true}
   if(!use){LS.del(DEVICE);return false}
-  P.ctrl=c;attachGroup(use,pushLocal);P.screen=resumeScreen();return true;
+  if(lockedElsewhere(use,c)){P.busy={groupId:d.groupId,name:(c&&c.name)||use.groupName};P.screen='busy';return true}
+  P.ctrl=c;attachGroup(use,pushLocal);claimDevice();P.screen=resumeScreen();return true;
 }
 async function loadNames(){P.namesList=null;P.err='';try{const docs=await Store.list('names');const seen=new Set();P.namesList=docs.filter(d=>d&&d.groupId&&d.name&&!seen.has(d.groupId)&&seen.add(d.groupId)).map(d=>({groupId:d.groupId,name:d.name})).sort((a,b)=>String(a.name).localeCompare(String(b.name)))}catch(e){P.namesList=[];P.err='Could not load the group list. Check the connection and tap Refresh list.'}if(P.screen==='resume'&&view()==='play')renderPlay()}
 /* time left before a mission's questions unlock; 0 once read, already answered or switched off */
 function briefLeft(m){const need=(+ev().logic.minBriefSec||0)*1000,g=P.g;if(!need||!g||!m)return 0;
   if(evalGroup(g).done.includes(m.id)||CT.qs(m.id).some(q=>g.attempts?.[q.id]))return 0;
   P.ui.bt=P.ui.bt||{};const t0=g.briefOpenedAt?.[m.id]||(P.ui.bt[m.id]=P.ui.bt[m.id]||now());return Math.max(0,need-(now()-t0))}
+/* the mission a group has opened but not yet activated, if it blocks mid in the same category */
+function missionLock(g,mid){if(!g||!ev().logic.missionLocking)return null;const cm=g.currentMission;if(!cm||cm===mid||!g.briefOpened?.[cm])return null;
+  const e=evalGroup(g);if(e.done.includes(cm)||e.done.includes(mid))return null;const a=CT.mission(cm),b=CT.mission(mid);if(!a||!b||a.categoryId!==b.categoryId)return null;return a}
 function resumeScreen(){
   const g=P.g;if(!g)return'welcome';const e=evalGroup(g);
   if(e.complete)return'allDone';
@@ -698,7 +726,8 @@ category(){
   return`<div class="wrap stack"><div class="crumb"><button class="link" data-act="go" data-arg="map">${icon('back',16)} Journey map</button><span>/</span><span>Category ${esc(c.code)}</span></div>
   <div class="row" style="gap:18px"><span class="code" style="width:64px;height:64px;border-radius:50%;display:grid;place-items:center;background:${col};color:#03122b;font-family:var(--disp);font-weight:800;font-size:28px">${esc(c.code)}</span><div style="flex:1"><h1>${esc(c.name)}</h1><p class="muted" style="max-width:70ch;margin-top:6px">${esc(c.description)}</p></div></div>
   <div class="mgrid">${ms.map(m=>{const qs=CT.qs(m.id),n=qs.filter(q=>CT.ok(q,g.solved?.[q.id])).length,dn=e.done.includes(m.id);
-    return`<button class="mcard ${dn?'done':''}" data-act="mission" data-arg="${esc(m.id)}"><span class="mi" style="color:${safeColor(m.color||c.color)}">${icon(m.icon,28)}</span><span class="tiny">${esc(m.code||'')} · Site Mission</span><h3>${esc(m.title)}</h3><span class="pdots" aria-hidden="true">${qs.map((q,i)=>`<i class="${i<n?'on':''}"></i>`).join('')}</span><span class="st" style="display:flex;gap:7px;align-items:center;font-weight:600;font-size:14px">${dn?`${icon('check',18)}<span style="color:var(--green)">Activated</span>`:n?`${icon('compass',18)}<span>${n} of ${qs.length} questions completed</span>`:`${icon('book',18)}<span>Read the brief to begin</span>`}</span></button>`}).join('')}</div></div>`;
+    const lk=missionLock(g,m.id),cur=!dn&&g.currentMission===m.id&&g.briefOpened?.[m.id];
+    return`<button class="mcard ${dn?'done':''} ${lk?'locked':''} ${cur?'current':''}" data-act="mission" data-arg="${esc(m.id)}" ${lk?`aria-disabled="true"`:''}><span class="mi" style="color:${safeColor(m.color||c.color)}">${icon(m.icon,28)}</span><span class="tiny">${esc(m.code||'')} · Site Mission</span><h3>${esc(m.title)}</h3><span class="pdots" aria-hidden="true">${qs.map((q,i)=>`<i class="${i<n?'on':''}"></i>`).join('')}</span><span class="st" style="display:flex;gap:7px;align-items:center;font-weight:600;font-size:14px">${dn?`${icon('check',18)}<span style="color:var(--green)">Activated</span>`:lk?`${icon('lock',18)}<span>Locked until ${esc(lk.code||lk.title)} is activated</span>`:cur?`${icon('compass',18)}<span style="color:var(--cyan)">In progress${n?` · ${n} of ${qs.length} questions`:''}</span>`:n?`${icon('compass',18)}<span>${n} of ${qs.length} questions completed</span>`:`${icon('book',18)}<span>Read the brief to begin</span>`}</span></button>`}).join('')}</div><p class="tiny" id="mlockmsg" aria-live="polite"></p></div>`;
 },
 brief(){
   const m=CT.mission(P.ui.mid);if(!m){P.screen='category';return SC.category()}
@@ -757,6 +786,13 @@ allDone(){
   <div class="card" style="padding:16px;max-width:820px;margin-inline:auto">${miniNetwork(g)}</div>
   <div style="max-width:340px;margin-inline:auto">${shipWidget(g,340)}</div></div>`;
 },
+busy(){const b=P.busy||{};return`<div class="card narrow stack" style="padding:32px;text-align:center">${icon('lock',40)}<h2>${esc(b.name||'This group')} is playing on another device</h2>
+  <p class="muted">Only one device can play for a group at a time, so answers never clash. You can continue here once the other device has been closed or idle for about ${Math.round(LOCK_MS/60000*10)/10} minutes, or a facilitator can release the group for you.</p>
+  <div class="row" style="justify-content:center"><button class="btn primary" data-act="busyRetry">${icon('refresh',18)}Try again</button><button class="btn ghost" data-act="go" data-arg="welcome">Back</button></div></div>`},
+elsewhere(){return`<div class="card narrow stack" style="padding:32px;text-align:center">${icon('ship',40)}<h2>Your group continued on another device</h2>
+  <p class="muted">To keep answers from clashing, this device has stopped. Carry on playing on the other device. Nothing has been lost.</p>
+  <div class="row" style="justify-content:center"><button class="btn primary" data-act="takeback">Continue on this device instead</button><button class="btn ghost" data-act="leaveElsewhere">Back to start</button></div>
+  <p class="tiny">Switching back works once the other device has been closed or idle for about ${Math.round(LOCK_MS/60000*10)/10} minutes.</p></div>`},
 removed(){return`<div class="card narrow stack" style="padding:32px;text-align:center">${icon('anchor',40)}<h2>This registration was closed</h2><p class="muted">A facilitator removed this group registration, often because the same group registered twice. Please check with the facilitator, then register again or continue with your group name.</p><div class="row" style="justify-content:center"><button class="btn primary" data-act="go" data-arg="welcome">Back to start</button></div></div>`}
 };
 
@@ -776,17 +812,27 @@ const ACT={
         const id=key;
         let ok=false;try{ok=await Store.claim('names/'+key,{groupId:id,name,at:now()})}catch(e){setErr(e&&e.code==='invalid_argument'?'This device does not have permission to join the event. Please ask a facilitator.':'Could not register right now. Please check the connection and try again.');return}
         if(!ok){setErr(`"${name}" was just registered by another group. Please choose another name.`);return}
-        const g={groupId:id,groupName:name,registeredAt:now(),currentCategory:null,currentMission:null,completedCategories:[],completedMissions:[],overallProgress:0,solved:{},attempts:{},briefOpened:{},briefOpenedAt:{},log:[],status:'registered',lastActivity:now(),include:!lv().denominatorLocked,lateRegistration:!!lv().denominatorLocked,resetEpoch:0,rev:1};
+        const g={groupId:id,groupName:name,registeredAt:now(),currentCategory:null,currentMission:null,completedCategories:[],completedMissions:[],overallProgress:0,solved:{},attempts:{},briefOpened:{},briefOpenedAt:{},log:[],status:'registered',lastActivity:now(),include:!lv().denominatorLocked,lateRegistration:!!lv().denominatorLocked,resetEpoch:0,rev:1,deviceId:DEVICE_ID,claimAt:now(),seenAt:now()};
         try{await Store.set('groups/'+id,g)}catch(e){Store.del('names/'+key).catch(()=>{});setErr(e&&e.code==='invalid_argument'?'This device does not have permission to join the event. Please ask a facilitator.':'Could not register right now. Please try again.');return}
         P.ctrl=null;attachGroup(g);P.lastSaved=now();P.screen='aboard';renderPlay();
       }}]});
   },
+  async busyRetry(){const id=P.busy?.groupId;if(!id)return ACT.go('welcome');let g=null,c=null;try{g=await Store.get('groups/'+id);c=await Store.get('ctrl/'+id)}catch(e){}
+    if(!g||(c&&c.removed))return toast('We could not open this group. Please ask a facilitator.');
+    if(lockedElsewhere(g,c))return toast('Still active on the other device. Please try again in a minute.');
+    P.ctrl=c;P.busy=null;attachGroup(g);claimDevice();P.screen=resumeScreen();toast(`Welcome back, ${gname()}.`);renderPlay()},
+  async takeback(){const id=P.g?.groupId;if(!id)return ACT.go('welcome');let g=null,c=null;try{g=await Store.get('groups/'+id);c=await Store.get('ctrl/'+id)}catch(e){}
+    if(!g)return toast('We could not open this group. Please ask a facilitator.');
+    if(lockedElsewhere(g,c))return toast('The other device is still active. Please try again in a minute.');
+    P.ctrl=c;attachGroup(g);claimDevice();P.screen=resumeScreen();renderPlay()},
+  leaveElsewhere(){P.unsubG?.();P.unsubC?.();LS.del(DEVICE);P.g=null;P.ctrl=null;P.elsewhere=false;P.ui={};P.screen='welcome';renderPlay()},
   pickSel(){const v=$('#gsel')?.value;if(v)ACT.pick(v)},
   pick(id){const n=(P.namesList||[]).find(x=>x.groupId===id);const name=n?n.name:id;
     modal({title:`Continue as ${name}?`,body:`<p>You will pick up where <b>${esc(name)}</b> left off. Only choose your own group.</p>`,actions:[{label:'Cancel',cls:'ghost'},{label:'Continue',cls:'primary',fn:async()=>{
       let g=null,c=null;try{g=await Store.get('groups/'+id);c=await Store.get('ctrl/'+id)}catch(e){}
       if(!g||(c&&c.removed)){P.err=`We could not open ${name}. Please ask a facilitator.`;loadNames();return}
-      P.ctrl=c;P.err='';attachGroup(g);P.screen=resumeScreen();toast(`Welcome back, ${gname()}.`);renderPlay()}}]})},
+      if(lockedElsewhere(g,c)){P.busy={groupId:id,name};P.screen='busy';renderPlay();return}
+      P.ctrl=c;P.err='';attachGroup(g);claimDevice();P.screen=resumeScreen();toast(`Welcome back, ${gname()}.`);renderPlay()}}]})},
   cat(cid){
     const g=P.g,e=evalGroup(g),lg=ev().logic,c=CT.cat(cid);
     const cur=lg.categoryLocking&&g.currentCategory&&!e.catsDone.includes(g.currentCategory)?g.currentCategory:null;
@@ -796,7 +842,12 @@ const ACT={
     modal({title:`Set sail for ${c.code}?`,body:`<p class="big">${esc(c.name)}</p><p class="muted">${lg.categoryLocking?'Your group will complete all three Site Missions here before choosing another destination.':'You can switch destinations at any time.'}</p>`,
       actions:[{label:'Not yet',cls:'ghost'},{label:`Sail to ${c.code}`,cls:'primary',fn:()=>{commit(x=>{x.currentCategory=cid});P.ui.viewCat=null;P.screen='category';renderPlay()}}]});
   },
-  mission(mid){P.ui={mid,viewCat:P.ui.viewCat};const g=P.g;if(!g.briefOpened?.[mid]||!g.briefOpenedAt?.[mid]||g.currentMission!==mid)commit(x=>{x.briefOpened[mid]=true;x.briefOpenedAt=x.briefOpenedAt||{};x.briefOpenedAt[mid]=x.briefOpenedAt[mid]||now();x.currentMission=mid});P.screen='brief';renderPlay()},
+  mission(mid){const g=P.g,lk=missionLock(g,mid);
+    if(lk){const msg=`Finish ${lk.code||lk.title} first. Your group opened it, so complete all of its questions before choosing another mission.`;const el=$('#mlockmsg');if(el)el.textContent=msg;return toast(msg)}
+    if(evalGroup(g).done.includes(mid)){P.ui={mid,viewCat:P.ui.viewCat};P.screen='brief';return renderPlay()}
+    const m=CT.mission(mid);
+    if(ev().logic.missionLocking&&g.currentMission!==mid&&!P.ui.confirmM){return modal({title:`Start ${m?.code||'this mission'}?`,body:`<p class="big">${esc(m?.title||'')}</p><p class="muted">Your group will answer all of its questions before choosing another mission in this category.</p>`,actions:[{label:'Not yet',cls:'ghost'},{label:`Start ${m?.code||'mission'}`,cls:'primary',fn:()=>{P.ui.confirmM=true;ACT.mission(mid)}}]})}
+    P.ui={mid,viewCat:P.ui.viewCat};if(!g.briefOpened?.[mid]||!g.briefOpenedAt?.[mid]||g.currentMission!==mid)commit(x=>{x.briefOpened[mid]=true;x.briefOpenedAt=x.briefOpenedAt||{};x.briefOpenedAt[mid]=x.briefOpenedAt[mid]||now();x.currentMission=mid});P.screen='brief';renderPlay()},
   startq(){const m=CT.mission(P.ui.mid);if(m&&briefLeft(m)>0)return toast('Please finish reading the brief first.');P.ui.fromQ=false;P.screen='question';renderPlay()},
   review(){P.ui.fromQ=true;P.ui.fb=null;P.ui.sel=null;P.screen='brief';renderPlay()},
   sel(id){if(P.ui.fb)return;P.ui.sel=id;$$('.opt').forEach(b=>b.setAttribute('aria-checked',String(b.dataset.arg===id)));const s=$('[data-act=submit]');if(s&&!s.dataset.until)s.disabled=false},
@@ -837,13 +888,13 @@ function schedDash(){if(D.pending)return;D.pending=true;const wait=Math.max(0,70
 function renderDash(){
   watchGroups();const d=ev().dashboard;D.tab=D.tab||d.view||'groups';
   $('#app').innerHTML=`<div class="dash" id="dash"><div class="dhead"><button class="brand" data-act="home" aria-label="Home" style="font-size:18px;background:none;border:0;cursor:pointer;min-height:44px">${icon('ship',28)}<span>Mission Voyage 2027</span></button><h1 style="flex:1">Site Mission 2027 · Live voyage</h1>
-  <div class="tabs" role="tablist">${[['groups','Groups'],['missions','Missions'],['network','Network']].map(([k,l])=>`<button role="tab" aria-selected="${D.tab===k}" data-dt="${k}">${l}</button>`).join('')}</div>
+  <div class="tabs" role="tablist">${[['groups','Groups'],['missions','Missions'],['network','Network'],['leaderboard','Leaderboard']].map(([k,l])=>`<button role="tab" aria-selected="${D.tab===k}" data-dt="${k}">${l}</button>`).join('')}</div>
   <button class="btn small ghost" id="dfs">${icon('expand',18)}Full screen</button>${AUTH.ok()?`<button class="btn small ghost" data-act="amenu">${icon('menu',18)}Admin menu</button>`:P.g?`<button class="btn small primary" data-act="backgame">${icon('back',18)}Back to our game</button>`:`<button class="btn small ghost" data-act="home">${icon('home',18)}Home</button>`}<span class="chip" id="dst"></span></div>
   <div class="stats" id="dstats"></div><div class="dbody" id="dbody"></div></div>`;
   $$('[data-dt]').forEach(b=>b.onclick=()=>{D.tab=b.dataset.dt;$$('[data-dt]').forEach(x=>x.setAttribute('aria-selected',String(x===b)));drawDash()});
   $('#dfs').onclick=()=>{const el=document.documentElement;(document.fullscreenElement?document.exitFullscreen():el.requestFullscreen?.())?.catch?.(()=>toast('Full screen is not available here.'))};
   clearInterval(D.rot);const rs=+d.rotateSec||0;
-  if(rs>0){D.rot=setInterval(()=>{const t=['groups','missions','network'];D.tab=t[(t.indexOf(D.tab)+1)%3];$$('[data-dt]').forEach(x=>x.setAttribute('aria-selected',String(x.dataset.dt===D.tab)));drawDash()},rs*1000);teardown.push(()=>clearInterval(D.rot))}
+  if(rs>0){D.rot=setInterval(()=>{const t=['groups','missions','network','leaderboard'];D.tab=t[(t.indexOf(D.tab)+1)%t.length];$$('[data-dt]').forEach(x=>x.setAttribute('aria-selected',String(x.dataset.dt===D.tab)));drawDash()},rs*1000);teardown.push(()=>clearInterval(D.rot))}
   const tick=setInterval(()=>{const st=$('#dst');if(st)st.innerHTML=dashChip()},Math.max(2,+d.refreshSec||5)*1000);teardown.push(()=>clearInterval(tick));
   if(D.ro)D.ro.disconnect();D.ro=new ResizeObserver(()=>{if(D.tab==='network')drawDash()});D.ro.observe($('#dbody'));teardown.push(()=>D.ro.disconnect());
   drawDash();
@@ -855,12 +906,14 @@ function drawDash(){
   if(view()!=='dashboard'||!$('#dbody'))return;
   const A=aggregate(),showPct=ev().dashboard.showPercent;
   $('#dst').innerHTML=dashChip();
-  $('#dstats').innerHTML=[[A.N,'groups sailing'],[A.inProg,'in progress'],[A.completed,'ships ready'],[`${A.fullCount}/${A.mstat.length||12}`,'missions fully activated'],...(showPct?[[A.overall+'%','overall voyage']]:[])].map(([b,s])=>`<div class="stat"><b>${esc(b)}</b><span>${s}</span></div>`).join('')+(A.ready?`<div class="ready">${icon('sparkle',20)}Every ship is ready · awaiting launch</div>`:'');
+  const first=finishers(A)[0];
+  $('#dstats').innerHTML=(first?`<div class="stat" style="border-color:#ffd166"><b style="color:#ffd166">${esc(label(first))}</b><span>first to finish</span></div>`:'')+[[A.N,'groups sailing'],[A.inProg,'in progress'],[A.completed,'ships ready'],[`${A.fullCount}/${A.mstat.length||12}`,'missions fully activated'],...(showPct?[[A.overall+'%','overall voyage']]:[])].map(([b,s])=>`<div class="stat"><b>${esc(b)}</b><span>${s}</span></div>`).join('')+(A.ready?`<div class="ready">${icon('sparkle',20)}Every ship is ready · awaiting launch</div>`:'');
   const body=$('#dbody');
   if(!CT.all().length){body.innerHTML=`<div class="empty">${icon('book',36)}<p>Mission content has not been published yet.</p></div>`;return}
   if(!A.gs.length){body.innerHTML=`<div class="empty">${icon('anchor',40)}<h2>Waiting for the first ships</h2><p>Groups appear here as soon as they register.</p></div>`;return}
   if(D.tab==='groups')body.innerHTML=dashGroups(A,showPct);
   else if(D.tab==='missions')body.innerHTML=dashMissions(A,showPct);
+  else if(D.tab==='leaderboard')body.innerHTML=dashLeader(A);
   else drawNetwork(body,A);
 }
 function dashGroups(A,showPct){
@@ -871,6 +924,16 @@ function dashGroups(A,showPct){
     const sub=st==='completed'?(e.exc?'Complete · exception':'Ready to sail'):st==='in_progress'?`${e.done.length}/${e.total}${showPct?` · ${e.pct}%`:''}${cur?` · at ${esc(cur.code)}`:''}`:'Not started';
     return`<div class="gt s-${st} ${e.idle?'idle':''}" title="${esc(g.name)}: ${e.done.length} of ${e.total} missions${g.include===false?' (not counted)':''}"><span class="mk">${mk}</span><b>${esc(label(g))}${g.include===false?' <span class="tiny">·late</span>':''}</b><span class="sub">${e.idle?`<span style="color:var(--amber)">Idle · </span>`:''}${sub}</span>
     <span class="pips">${cats.map(c=>{const col=safeColor(c.color),dn=e.catsDone.includes(c.id),isCur=g.currentCategory===c.id;return`<i style="${dn?`background:${col};color:#03122b;border-color:${col}`:isCur?`border-color:${col};color:${col}`:''}" aria-label="${esc(c.code)} ${dn?'complete':isCur?'current':'not complete'}">${esc(c.code)}${dn?'✓':''}</i>`}).join('')}</span></div>`}).join('')}</div>${leg}`;
+}
+function finishers(A){return A.gs.filter(g=>g.ev.complete&&!g.ev.exc).sort((a,b)=>(a.completedAt||a.lastActivity||0)-(b.completedAt||b.lastActivity||0))}
+function dashLeader(A){
+  const start=g=>Math.max(g.registeredAt||0,lv().startedAt||0)||g.registeredAt||0;
+  const fin=finishers(A),exc=A.gs.filter(g=>g.ev.complete&&g.ev.exc);
+  const sail=A.gs.filter(g=>!g.ev.complete).sort((a,b)=>b.ev.done.length-a.ev.done.length||(a.registeredAt||0)-(b.registeredAt||0));
+  const medal=['#ffd166','#dfe7f1','#e3a86b'];
+  return`<div class="lbwrap"><section class="lb"><h3>${icon('flag',20)}Finish order</h3>${fin.length?fin.map((g,i)=>`<div class="lbr ${i<3?'top':''}" style="${i<3?`--m:${medal[i]}`:''}"><span class="rk">${i+1}</span><b>${esc(label(g))}</b><span class="lt" title="Finished at">${icon('clock',14)}${fmtTime(g.completedAt)}</span><span class="ld" title="Voyage time">${g.completedAt?fmtClock(g.completedAt-start(g)):''}</span></div>`).join(''):`<div class="empty" style="padding:24px"><p>No ship has finished yet. The first group to activate all ${CT.all().length||12} Site Missions appears here.</p></div>`}
+  ${exc.length?`<p class="tiny" style="margin-top:12px">Completed with a technical exception (not ranked): ${exc.map(g=>esc(label(g))).join(', ')}</p>`:''}</section>
+  <section class="lb"><h3>${icon('ship',20)}Still sailing</h3>${sail.length?sail.map(g=>`<div class="lbs"><b>${esc(label(g))}</b><i><b style="width:${g.ev.pct}%"></b></i><span>${g.ev.done.length}/${g.ev.total}</span></div>`).join(''):`<p class="muted">Every ship has finished.</p>`}</section></div>`;
 }
 function ring(p,col,full){const r=27,C=2*Math.PI*r;return`<svg class="ring" viewBox="0 0 66 66" aria-hidden="true"><circle cx="33" cy="33" r="${r}" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="7"/><circle cx="33" cy="33" r="${r}" fill="none" stroke="${p?col:'transparent'}" stroke-width="7" stroke-linecap="round" stroke-dasharray="${(C*p/100).toFixed(1)} ${C.toFixed(1)}" transform="rotate(-90 33 33)" ${full?`style="filter:drop-shadow(0 0 6px ${col})"`:''} opacity="${full?1:.75}"/><text x="33" y="38" text-anchor="middle" font-family="Sora, Inter, system-ui, sans-serif" font-weight="700" font-size="15" fill="${full?col:'#f3f7ff'}">${p}%</text></svg>`}
 function dashMissions(A,showPct){
@@ -950,7 +1013,7 @@ function drawFac(){
     <td>${e.complete?`<span style="color:var(--green)">${icon('check',16)} ${e.exc?'Exception':'Complete'}</span>`:e.status==='in_progress'?'In progress':'Not started'}${e.idle?` <span class="tag" style="color:var(--amber)">inactive</span>`:''}${g.exception?`<br><span class="tiny">Exception: ${esc(g.exception.note)}</span>`:''}</td>
     <td class="num">${e.done.length}/${e.total}</td><td>${esc(cur)}</td><td class="num">${fmtTime(g.lastActivity)}</td>
     <td><label class="sw"><input type="checkbox" data-finc="${esc(g.groupId)}" ${g.include!==false?'checked':''}> <span class="sr">Count ${esc(g.name)}</span>${g.lateRegistration?'<span class="tiny">late</span>':''}</label></td>
-    <td><div class="row" style="gap:4px"><button class="btn small ghost" data-act="fRename" data-arg="${esc(g.groupId)}" aria-label="Rename ${esc(g.name)}">${icon('edit',16)}</button><button class="btn small ghost" data-act="fExc" data-arg="${esc(g.groupId)}">Exception</button><button class="btn small ghost" data-act="fReset" data-arg="${esc(g.groupId)}">Reset</button><button class="btn small warn" data-act="fRemove" data-arg="${esc(g.groupId)}" aria-label="Remove ${esc(g.name)}">${icon('trash',16)}</button></div></td></tr>`}).join('')}</tbody></table></div>`:`<div class="empty"><p>${A.gs.length?'No groups match this filter.':'No groups have registered yet.'}</p></div>`}</section>
+    <td><div class="row" style="gap:4px"><button class="btn small ghost" data-act="fRename" data-arg="${esc(g.groupId)}" aria-label="Rename ${esc(g.name)}">${icon('edit',16)}</button><button class="btn small ghost" data-act="fExc" data-arg="${esc(g.groupId)}">Exception</button><button class="btn small ghost" data-act="fReset" data-arg="${esc(g.groupId)}">Reset</button>${g.deviceId&&!g.ev.complete?`<button class="btn small ghost" data-act="fRelease" data-arg="${esc(g.groupId)}" title="Let this group continue on another device">Release device</button>`:''}<button class="btn small warn" data-act="fRemove" data-arg="${esc(g.groupId)}" aria-label="Remove ${esc(g.name)}">${icon('trash',16)}</button></div></td></tr>`}).join('')}</tbody></table></div>`:`<div class="empty"><p>${A.gs.length?'No groups match this filter.':'No groups have registered yet.'}</p></div>`}</section>
   <details class="sec" id="demosec" ${F.demoOpen?'open':''}><summary>Rehearsal tools ${demo?`<span class="tag ph">${demo} demo groups</span>`:''}</summary><div class="in"><p class="muted">Create simulated groups to rehearse the dashboard and the final launch. Remove them before the event starts.</p>
    <div class="row"><button class="btn small" data-act="fDemo" data-arg="add">Add 12 demo groups</button><button class="btn small" data-act="fDemo" data-arg="step" ${demo?'':'disabled'}>Advance demo groups</button><button class="btn small" data-act="fDemo" data-arg="finish" ${demo?'':'disabled'}>Finish all demo groups</button><button class="btn small warn" data-act="fDemo" data-arg="remove" ${demo?'':'disabled'}>Remove demo groups</button></div></div></details>`;
   const fq=$('#fq');fq.oninput=()=>{F.q=fq.value;clearTimeout(F.t);F.t=setTimeout(()=>{drawFac();const n=$('#fq');n.focus();n.setSelectionRange(n.value.length,n.value.length)},350)};
@@ -972,6 +1035,7 @@ const ADM={
   fFinal(){const A=aggregate();if(!A.ready)return;modal({title:'Launch the final animation?',body:`<p>All ${A.N} counted groups have completed all twelve Site Missions.</p><p class="muted">The animation will play on the live dashboard and on every finished group's device.</p>`,actions:[{label:'Not yet',cls:'ghost'},{label:'Launch the ship',cls:'primary',fn:async()=>{await setLive({finalTrigger:(lv().finalTrigger||0)+1,finalAt:now()});playFinal()}}]})},
   fReplay(){setLive({finalTrigger:(lv().finalTrigger||0)+1,finalAt:now()});playFinal()},
   fPreview(){playFinal()},
+  fRelease(id){const g=gById(id);if(!g)return;modal({title:`Release ${g.name}?`,body:`<p>Use this when a group's device broke, ran out of battery or was swapped. The group can then continue on any device straight away, from “Continue your journey”. If the old device is still open, it stops when the new one takes over.</p>`,actions:[{label:'Cancel',cls:'ghost'},{label:'Release device',cls:'primary',fn:async()=>{await setCtrl(id,{releaseAt:now()});toast('Released. The group can continue on another device now.')}}]})},
   fRename(id){const g=gById(id);if(!g)return;modal({title:'Rename group',body:`<div class="field"><label for="rn">New name</label><input class="input" id="rn" maxlength="40" value="${esc(g.name)}"></div><p class="err" id="rnerr"></p>`,actions:[{label:'Cancel',cls:'ghost'},{label:'Rename',cls:'primary',fn:async m=>{
     const nn=$('#rn',m).value.trim().replace(/\s+/g,' ');if(nn.length<2){$('#rnerr',m).textContent='Enter at least 2 characters.';return false}
     const k=nameKey(nn),ok=k===nameKey(g.name)||await Store.claim('names/'+k,{groupId:id,name:nn,at:now()});if(!ok){$('#rnerr',m).textContent='That name is already taken.';return false}
@@ -1064,10 +1128,10 @@ function drawDev(){
    ${fld('Show hint after this many attempts','event.logic.hintThreshold',lg.hintThreshold,'number','min="1" max="10"')}${fld('Minimum time on the mission brief before questions unlock (seconds, 0 = off)','event.logic.minBriefSec',lg.minBriefSec,'number','min="0" max="300"')}${fld('Mark group inactive after (minutes)','event.logic.timeoutMin',lg.timeoutMin,'number','min="1" max="60"')}
    ${fld('Session length (minutes)','event.logic.durationMin',lg.durationMin,'number','min="10" max="180"')}
    ${fld('Final activation condition','event.logic.exceptionsCount',lg.exceptionsCount?'1':'0','select',opt('1',lg.exceptionsCount?'1':'0','All groups complete; technical exceptions count')+opt('0',lg.exceptionsCount?'1':'0','All groups complete; exceptions do not count'))}</div>
-   <div class="row">${fld('Category locking','event.logic.categoryLocking',lg.categoryLocking,'check')}${fld('Shuffle answer options','event.logic.shuffleAnswers',lg.shuffleAnswers,'check')}${fld('Reshuffle on retry','event.logic.shuffleOnRetry',lg.shuffleOnRetry,'check')}${fld('Show session timer','event.logic.timerVisible',lg.timerVisible,'check')}</div>
+   <div class="row">${fld('Category locking','event.logic.categoryLocking',lg.categoryLocking,'check')}${fld('Mission locking (finish the opened mission first)','event.logic.missionLocking',lg.missionLocking,'check')}${fld('Shuffle answer options','event.logic.shuffleAnswers',lg.shuffleAnswers,'check')}${fld('Reshuffle on retry','event.logic.shuffleOnRetry',lg.shuffleOnRetry,'check')}${fld('Show session timer','event.logic.timerVisible',lg.timerVisible,'check')}</div>
    <p class="tiny">Auto-save: progress is written after every answer and every navigation step (fixed, to protect group progress).</p></div></details>
   <details class="sec" ${opn('s3')}><summary>3 · Dashboard settings</summary><div class="in"><div class="fgrid">
-   ${fld('Default view','event.dashboard.view',db.view,'select',[['groups','Group progress'],['missions','Mission progress'],['network','Network activation']].map(([v,l])=>opt(v,db.view,l)).join(''))}
+   ${fld('Default view','event.dashboard.view',db.view,'select',[['groups','Group progress'],['missions','Mission progress'],['network','Network activation'],['leaderboard','Leaderboard']].map(([v,l])=>opt(v,db.view,l)).join(''))}
    ${fld('Status refresh (seconds)','event.dashboard.refreshSec',db.refreshSec,'number','min="2" max="30"')}${fld('Auto-rotate views every (seconds, 0 = off)','event.dashboard.rotateSec',db.rotateSec,'number','min="0" max="300"')}
    ${fld('Animation intensity','event.dashboard.intensity',db.intensity,'select',['low','normal','high'].map(v=>opt(v,db.intensity)).join(''))}</div>
    <div class="row">${fld('Show percentages','event.dashboard.showPercent',db.showPercent,'check')}</div><p class="tiny">Full screen and the final animation trigger are on the dashboard and facilitator pages.</p></div></details>
